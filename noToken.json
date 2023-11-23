@@ -9,6 +9,5 @@
   "/upload",
   "/lottery",
   "/chatList",
-  "/chatMsg",
-  "/chatSend"
+  "/chatMsg"
 ]
