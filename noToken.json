@@ -8,5 +8,6 @@
   "/recordsList",
   "/upload",
   "/lottery",
-  "/chatList"
+  "/chatList",
+  "/chatMsg"
 ]
