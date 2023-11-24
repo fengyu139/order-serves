@@ -53,6 +53,10 @@ app.post("/api/chartBar", async (req, res) => {
     barData.times.unshift(item._id.month+"-"+item._id.day)
     barData.values.unshift(item.data.toFixed(2)+0)
   })
+  const totalMoney=result1.reduce((a,b)=>{
+    return a+b.data
+  },0)
+  barData.totalMoney=totalMoney.toFixed(2)
   let result2=await findChartPie(req.body)
   let pieData={}
   result2.forEach((item)=>{
