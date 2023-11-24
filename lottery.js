@@ -331,5 +331,5 @@ function calculateIntervals(arr) {
 // setInterval(() => {
 //     getScBdRecords()
 // },10);
-getScBdRecords()
+// getScBdRecords()
 }
