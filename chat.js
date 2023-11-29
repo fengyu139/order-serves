@@ -31,6 +31,10 @@ module.exports =(io,app)=> {
             ChatMsg.insertMany(data)
             socket.broadcast.emit('chat', data);
         })
+        socket.on('chatEnter', (data) => {
+          console.log(data);
+          socket.broadcast.emit('chatEnter', data);
+        })
         // 处理客户端断开连接
         socket.on('disconnect', () => {
           // console.log('一个客户端断开连接');
