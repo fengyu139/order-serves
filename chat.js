@@ -1,4 +1,13 @@
 const mongoose = require("mongoose");
+const os = require('os');
+// 获取网络接口列表
+const networkInterfaces = os.networkInterfaces();
+// 找到第一个非内部地址的 IPv4 地址
+const ipAddress = Object.values(networkInterfaces)
+  .flat()
+  .filter((iface) => iface.family === 'IPv4' && !iface.internal)
+  .map((iface) => iface.address)[0];
+console.log('Server IP Address:', ipAddress);
 const Schema = mongoose.Schema;
 const Chat = new Schema({
     name: String,
@@ -22,8 +31,7 @@ module.exports =(io,app)=> {
             console.log(`收到聊天消息: ${JSON.stringify(data)}`);
             // 收到聊天消息
             if(data.type === 'img'||data.type === 'file') {
-                let url='http://154.92.15.136:8000/'
-                data.picImg='http://127.0.0.1:8000/'+data.picImg
+                data.picImg=`http://${ipAddress}:8000/`+data.picImg
                 io.sockets.emit('chat', data);
                 ChatMsg.insertMany(data)
                 return
