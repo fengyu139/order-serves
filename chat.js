@@ -15,7 +15,8 @@ const Chat = new Schema({
     picImg:String,
     msg: String,
     time: Date,
-    chatId: String
+    chatId: String,
+    msgId: String
 });
 const ChatMsg = mongoose.model('ChatMsg', Chat);
 module.exports =(io,app)=> {
@@ -42,6 +43,15 @@ module.exports =(io,app)=> {
         socket.on('chatEnter', (data) => {
           console.log(data);
           socket.broadcast.emit('chatEnter', data);
+        })
+        socket.on('chatDelete', (data) => {
+          console.log(data);
+          io.sockets.emit('chatDelete', data);
+          ChatMsg.deleteOne({msgId:data}).then(res=>{
+            console.log(res);
+          }).catch(err=>{
+            console.log(err);
+          })
         })
         // 处理客户端断开连接
         socket.on('disconnect', () => {
