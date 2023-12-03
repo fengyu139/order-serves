@@ -11,8 +11,8 @@ const OpenRecords = mongoose.model('openRecords', openRecords);
 const axios = require('axios');
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.headers.post['Device'] = 4;
-axios.defaults.headers.post['Token'] = '578c843f1c134cd0be4f0a0778cddac11700660582249';
-axios.defaults.headers.get['Token'] = '578c843f1c134cd0be4f0a0778cddac11700660582249';
+axios.defaults.headers.post['Token'] = '261db18c63f54c91b09815c446eaf6571701611567423';
+axios.defaults.headers.get['Token'] = '261db18c63f54c91b09815c446eaf6571701611567423';
 module.exports = app => {
   app.get('/api/lottery', async (req, res) => {
    try {
@@ -147,6 +147,11 @@ app.get('/api/start', async (req, res) => {
     'planNo': issue.data.data[0].planId,
 
   }
+  let minKey=await getScBdRecords()  
+  codeNum=codeNum.filter(item=>{
+    return item!=minKey
+  })
+  console.log(codeNum);
   // if(checkbox){
   //   let records= await getScRecords()
   //  let numArr=[]
@@ -274,16 +279,38 @@ async function getScBdRecords(){
       ticketId:67
     }
   })
+  // let totalRecords=records.data.data.map(item=>{
+  //   return item.code.split(' ').splice(0,2).reduce((a,b)=>{
+  //     return Number(a)+ Number(b)
+  //   },0)
+  // })
   let totalRecords=records.data.data.map(item=>{
-    return item.code.split(' ').splice(0,2).reduce((a,b)=>{
-      return Number(a)+ Number(b)
-    },0)
+    return item.code.split(' ')[0]
   })
-  console.log(totalRecords.length);
-let totalCount =totalRecords.filter(item=>{
-  return item==17
-})
-console.log(totalCount.length);
+  let cObj={}
+  let cArr=[]
+  for (let index = 0; index < 10; index++) {
+   let count= (totalRecords.filter(item=>{
+      return item==(index+1)
+    }).length);
+    cArr.push(count)
+    cObj[index+1]=count
+   
+    
+  }
+  //求数组中最小的值
+  let min = Math.min(...cArr);
+  let minKey=0
+  // console.log(cObj);
+  for (const key in cObj) {
+    if(cObj[key]==min){
+      minKey=key
+    }
+  } 
+// let totalCount =totalRecords.filter(item=>{
+//   return item==16
+// })
+// console.log(totalCount.length);
 // 出现次数和未开次数
 // let selectNum= [3,4,18,19]
 // selectNum.forEach(item=>{
@@ -305,6 +332,7 @@ console.log(totalCount.length);
 //   return item>10
 // }).length);
 //  return records.data.data
+return minKey
 }
 function calculateIntervals(arr) {
   let intervals = [];
@@ -331,5 +359,6 @@ function calculateIntervals(arr) {
 // setInterval(() => {
 //     getScBdRecords()
 // },10);
-// getScBdRecords()
+// console.log( minKey);
+// toPaly()
 }
