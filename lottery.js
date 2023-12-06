@@ -11,8 +11,8 @@ const OpenRecords = mongoose.model('openRecords', openRecords);
 const axios = require('axios');
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.headers.post['Device'] = 4;
-axios.defaults.headers.post['Token'] = '201b2062ce5f4b92b401505a63656ef11701686450228';
-axios.defaults.headers.get['Token'] = '201b2062ce5f4b92b401505a63656ef11701686450228';
+axios.defaults.headers.post['Token'] = '9340eeedebb04e3fb909b09ccda6d9db1701807048265';
+axios.defaults.headers.get['Token'] = '9340eeedebb04e3fb909b09ccda6d9db1701807048265';
 module.exports = app => {
   app.get('/api/lottery', async (req, res) => {
    try {
@@ -85,9 +85,10 @@ var money=0
 var checkbox=false
 var defaultMoney=0
 var maxKey=0
-var tzCount=12
+var tzCount=10
 var tzFlag=false
-var endCount=generateRandomInteger(10, 30)
+var endCount=generateRandomInteger(14, 30)
+
 //随机生成10-20的整数
 function generateRandomInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -98,10 +99,12 @@ async function getBalance(flag){
     format:'json',
     rows:1,
   }).then(res=>{  
-    if(flag){
+    if(flag&&res.data.sucess){
         balance=Number(res.data.data.balance)
     }
-      logger.info(res.data.data.balance)
+      if(res.data.sucess){
+        logger.info(res.data.data.balance)
+      }
   })
   }
 app.get('/api/start', async (req, res) => {
@@ -132,12 +135,14 @@ await getBalance(true)
   })
   function queryInfo(){
     axios.post('https://cgcpapitp2p2.aengae4.com:10151/boracay/member/front/userInfo').then(res=>{
-      logger.info(res.data.data.balance)
+      if(res.data.sucess){
+        logger.info(res.data.data.balance)
       logger.info(Number(res.data.data.balance)-balance);
       if(Number(res.data.data.balance)-balance>expected||Number(res.data.data.balance)-balance<-1000){
         logger.warn('结束了：'+res.data.data.balance);
         clearInterval(timer)
         clearInterval(timer2)
+      }
       }
     })
     // let result=await axios.get('https://kclm.site/api/trial/drawResult',{
@@ -153,7 +158,6 @@ await getBalance(true)
   },60000)
   var ylCount=0
   async function toPaly (){
-   
   let issue=await axios.get('https://cgcpapitp2p2.aengae4.com:10151/coron/ticketmod/currentSaleIssue.json?ticketIds=67')
   let codeNum=generateUniqueRandomNumbers(1, 10, 3)
   let formData={
@@ -161,24 +165,11 @@ await getBalance(true)
     'planNo': issue.data.data[0].planId,
 
   }
-  await getScBdRecords()  
-  
-  // if(checkbox){
-  //   let records= await getScRecords()
-  //  let numArr=[]
-  //  records.forEach((item)=>{
-  //  numArr.push(item.code.substring(0,1))
-  //  })
-  //  numArr.splice(0,5)
-  //  let topThreeFrequentElements = findTopThreeFrequentElements(numArr);
-  //  console.log(topThreeFrequentElements);
-  //   codeNum=topThreeFrequentElements.map((item)=>{
-  //     return Number(item.element)
-  //   })
-  // }
-  // return
-  let records= await getScRecords()
   tzCount=tzCount+1
+  await getScBdRecords()  
+  console.log(maxKey);
+  let records= await getScRecords()
+  
   console.log(tzCount);
   if(tzCount<endCount){
     return
@@ -312,16 +303,16 @@ async function getScBdRecords(){
    
     
   }
-  console.log(cObj);
   //求数组中最小的值
   let max = Math.max(...cArr);
   // console.log(cObj);
   for (const key in cObj) {
     if(cObj[key]==max){
-      maxKey=key
+      if(tzCount==endCount){
+        maxKey=key
+      }
     }
-  } 
-  console.log(maxKey);
+  }  
 // let totalCount =totalRecords.filter(item=>{
 //   return item==16
 // })
@@ -371,9 +362,8 @@ function calculateIntervals(arr) {
 // 计算数字 2 出现的间隔
 // let intervals = calculateIntervals(myArray);
 
-// setInterval(() => {
-//     getScBdRecords()
-// },10);
 // console.log( maxKey);
-// toPaly()
+// setInterval(() => {
+//     toPaly()
+// }, 3000);
 }
