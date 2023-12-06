@@ -92,13 +92,15 @@ var endCount=generateRandomInteger(10, 30)
 function generateRandomInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-async function getBalance(){
+async function getBalance(flag){
     axios.post('https://cgcpapitp2p2.aengae4.com:10151/boracay/member/front/userInfo', {
     code:'cctxffc',
     format:'json',
     rows:1,
   }).then(res=>{  
-      balance=Number(res.data.data.balance)
+    if(flag){
+        balance=Number(res.data.data.balance)
+    }
       logger.info(res.data.data.balance)
   })
   }
@@ -113,7 +115,7 @@ app.get('/api/start', async (req, res) => {
  
   expected=Number(req.query.expected)
   
-await getBalance()
+await getBalance(true)
   clearInterval(timer)
   clearInterval(timer2)
   timer2=setInterval(async ()=>{
