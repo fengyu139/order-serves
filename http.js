@@ -11,6 +11,7 @@ const {orderSave,findOrder,updateOrder,findChart,findChartPie,orderTotal}=requir
 const {menuSave,findMenus,updateMenu,deleteMenu}=require("./allMenu");
 const {recordsSave,findRecords,updateRecords}=require("./orderRecords");
 const logger = require('./log4jsLogger');
+const ipAddress = require("./ipAddress");
 function createLogProxy (logLevel, logger) {
   return (...param) => {
       logger[logLevel](...param);
@@ -376,27 +377,24 @@ app.post("/api/deleteMenu", (req, res) => {
 })
 
 // 获取和查询菜单
-app.post("/api/getMenu",  (req, res) => {
-  findMenus(req.body).then((result) => {
-    const serverAddress = `${req.protocol}://${req.get('host')}/`;
-    let url='';
-    serverAddress.includes('127.0.0.1')?url='http://127.0.0.1:8000/':url='http://154.92.15.136:8000/';
-    result.forEach((item)=>{
-      item.picImg=url+item.picImg
+app.post("/api/getMenu", async (req, res) => {
+  try {
+    let dbRes=await findMenus(req.body)
+    dbRes.forEach((item)=>{
+      item.picImg=`http://${ipAddress}:8000/`+item.picImg
     })
-    console.log(serverAddress);
     res.send({
       code: 1,
       msg: "success",
-      data: result
+      data: dbRes
     })
-  }).catch((err)=>{
+  } catch (error) {
     res.send({
       code: 0,
-      msg: err,
+      msg: error,
       data: ''
     });
-  })
+  }
 })
 
 // 配置文件上传目录和文件名
