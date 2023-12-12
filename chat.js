@@ -8,7 +8,8 @@ const Chat = new Schema({
     msg: String,
     time: Date,
     chatId: String,
-    msgId: String
+    msgId: String,
+    isRead: Boolean
 });
 const ChatMsg = mongoose.model('ChatMsg', Chat);
 module.exports =(io,app)=> {
@@ -25,6 +26,7 @@ module.exports =(io,app)=> {
             // 收到聊天消息
             if(data.type === 'img'||data.type === 'file') {
                 data.picImg=`http://${ipAddress}:8000/`+data.picImg
+                data.isRead = false
                 io.sockets.emit('chat', data);
                 ChatMsg.insertMany(data)
                 return
@@ -35,6 +37,14 @@ module.exports =(io,app)=> {
         socket.on('chatEnter', (data) => {
           console.log(data);
           socket.broadcast.emit('chatEnter', data);
+        })
+        socket.on('read',async (data) => {
+          console.log(data);
+          socket.broadcast.emit('read', data);
+          for (const item of data) {
+            let res=await ChatMsg.updateOne({msgId:item.msgId||item},{isRead:true})
+            console.log(res);
+          }
         })
         socket.on('chatDelete', (data) => {
           console.log(data);
@@ -60,4 +70,7 @@ module.exports =(io,app)=> {
               msg: '获取成功'
           })
       })
+      // ChatMsg.updateMany({},{isRead:true}).then(res=>{
+      //   console.log(res);
+      // })
 }
