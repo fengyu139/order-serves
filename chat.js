@@ -242,17 +242,17 @@ function paly(game_cycle_id){
   axios.request(config)
   .then((response) => {
     console.log(JSON.stringify(response.data));
-    // if(response.data.errors&&response.data.errors[0].error_code==10047){
-    //   let newData=JSON.parse(data)
-    //   newData.variables.orders[0].bet_multiple=currentBalance
-    //   config.data=JSON.stringify(newData)
-    //   axios.request(config).then((response2)=>{
-    //     console.log(JSON.stringify(response2.data));
-    //   })
-    //   if(currentBalance<1){
-    //     clearInterval(timer1)
-    //   }
-    // };
+    if(response.data.errors&&response.data.errors[0].error_code==10047){
+      let newData=JSON.parse(data)
+      newData.variables.orders[0].bet_multiple=currentBalance
+      config.data=JSON.stringify(newData)
+      axios.request(config).then((response2)=>{
+        console.log(JSON.stringify(response2.data));
+      })
+      if(currentBalance<1){
+        clearInterval(timer1)
+      }
+    };
     playCount++
   })
   .catch((error) => {
