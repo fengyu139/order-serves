@@ -81,7 +81,8 @@ module.exports =(io,app)=> {
       app.get('/api/sYstart', async (req, res) => {
         token = req.query.token
         radioVal=req.query.radioVal
-       await getBalance()
+        console.log(req.query);
+       await getBalance(true)
         start()
         clearInterval(timer1)
         timer1=setInterval(async ()=>{
