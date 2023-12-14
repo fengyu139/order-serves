@@ -71,8 +71,8 @@ module.exports =(io,app)=> {
               msg: '获取成功'
           })
       })
-      var token='7IcsYfSYYzY4G1Ot8kWRLb0jw4eQ4nMCRSWB58rihyM=.eyJ1IjoxMjY2MTAsImEiOjEwOTk2MTgsInQiOiI0ZjFiZDg1YTExNmNhOTVhIiwiayI6MX0='
-      var baseUrl='https://888.syhb16.com/APIV2/GraphQL?l=zh-cn&pf=h5&udid=3844f21c-9ec8-40df-bad2-172b02911cb7&ac=hzm521'
+      var token='YlGfFJAf1S0sECCXL81osC9TfQZ5d_hrzYv-PDqyxyA=.eyJ1IjoxMjY2ODAsImEiOjExMDAyMTAsInQiOiIyNzk2MmZhNjQwYWI0ZDI3IiwiayI6MX0='
+      var baseUrl='https://sy3.sy88103.com/APIV2/GraphQL?l=zh-cn&pf=h5&udid=1902b249-a350-4a96-a53e-14caf7a5b3e5&ac=hzm099'
       var balance=0
       var playName=''
       var playCount=1
@@ -82,6 +82,7 @@ module.exports =(io,app)=> {
         token = req.query.token
         radioVal=req.query.radioVal
         console.log(req.query);
+      await getHistory()
        await getBalance(true)
         start()
         clearInterval(timer1)
@@ -124,7 +125,7 @@ async function getNowId(){
     "operationName": "GetLotteryCycle",
     "variables": {
       "game_id": 218,
-      "row_count": 30
+      "row_count": 3
     },
     "query": "query GetLotteryCycle($game_id: Int!, $row_count: Int) {\n  LotteryGame(game_id: $game_id) {\n    game_id\n    game_value\n    base_game\n    official_website\n    lottery_cycle_now {\n      now_cycle_id\n      now_cycle_value\n      now_cycle_count_down\n      last_cycle_value\n      last_cycle_game_result\n      future_cycle_list {\n        cycle_id\n        cycle_value\n        __typename\n      }\n      __typename\n    }\n    lottery_result_history(row_count: $row_count) {\n      cycle_value\n      game_result\n      open_time\n      extra_context {\n        hash\n        block\n        __typename\n      }\n      __typename\n    }\n    extra_info {\n      trxbh_account_from\n      trxbh_account_to\n      trxbh_URL\n      __typename\n    }\n    __typename\n  }\n}\n"
   });
@@ -140,44 +141,44 @@ async function getNowId(){
   };
   
   let res=await axios.request(config)
-  let history2= res.data.data.LotteryGame.lottery_result_history.slice(0,2).map(item=>{
-    return item.game_result
-  })
-  playName=''
-  let filterHistory=history2.filter(item=>{
-    return item[0]<item[4]
-  })
-  let filterHistory2=history2.filter(item=>{
-    return item[0]>item[4]
-  })
-  console.log(filterHistory,filterHistory2);
-  if(radioVal=='1'){
-      //顺龙
-  if(filterHistory.length==2){
-    playName='tiger'
-  }
-  if(filterHistory2.length==2){
-    playName='dragon'
-  }
-  }
-  if(radioVal=='2'){
-     //反龙
-  if(filterHistory.length==0){
-    playName='tiger'
-  }
-  if(filterHistory2.length==0){
-    playName='dragon'
-  }
-  }
-  if(playCount==4){
-    playCount=1
-  }
-  if(filterHistory2.length&&filterHistory.length){
-    playCount=1
-  }
- if(playName==''){
-  return
- }
+//   let history2= res.data.data.LotteryGame.lottery_result_history.slice(0,2).map(item=>{
+//     return item.game_result
+//   })
+//   playName=''
+//   let filterHistory=history2.filter(item=>{
+//     return item[0]<item[4]
+//   })
+//   let filterHistory2=history2.filter(item=>{
+//     return item[0]>item[4]
+//   })
+//   console.log(filterHistory,filterHistory2);
+//   if(radioVal=='1'){
+//       //顺龙
+//   if(filterHistory.length==2){
+//     playName='tiger'
+//   }
+//   if(filterHistory2.length==2){
+//     playName='dragon'
+//   }
+//   }
+//   if(radioVal=='2'){
+//      //反龙
+//   if(filterHistory.length==0){
+//     playName='tiger'
+//   }
+//   if(filterHistory2.length==0){
+//     playName='dragon'
+//   }
+//   }
+//   if(playCount==4){
+//     playCount=1
+//   }
+//   if(filterHistory2.length&&filterHistory.length){
+//     playCount=1
+//   }
+//  if(playName==''){
+//   return
+//  }
  return res.data.data.LotteryGame.lottery_cycle_now.now_cycle_id
 }
 function paly(game_cycle_id){
@@ -186,26 +187,31 @@ function paly(game_cycle_id){
   }
   let orders=[]
   let numArr=generateUniqueRandomNumbers(1,10,4)
-  // numArr.forEach(element => {
-  //   orders.push({
-  //     "game_id": 169,
-  //     "game_type_id": 6,
-  //     "bet_info": "[[\""+element+"\"],[],[],[],[]]",
-  //     "bet_multiple": 2,
-  //     "game_cycle_id": game_cycle_id,
-  //     "bet_percent_type": "AdjustPercentType",
-  //     "bet_percent": 0
-  //   })
-  // });
-  orders.push( {
-    "game_id": 218,
-    "game_type_id": 123,
-    "bet_info": "[[\""+playName+"\"]]",
-    "bet_multiple": 100*playCount,
-    "game_cycle_id": game_cycle_id,
-    "bet_percent_type": "AdjustPercentType",
-    "bet_percent": 0
-  })
+  tzNum.forEach(element => {
+    orders.push({
+      "game_id": 218,
+      "game_type_id": 65,
+      "bet_info": "[[\""+element+"\"],[],[],[],[]]",
+      "bet_multiple": 30,
+      "game_cycle_id": game_cycle_id,
+      "bet_percent_type": "AdjustPercentType",
+      "bet_percent": 0
+    })
+  });
+
+
+
+  // orders.push( {
+  //   "game_id": 218,
+  //   "game_type_id": 123,
+  //   "bet_info": "[[\""+playName+"\"]]",
+  //   "bet_multiple": 100*playCount,
+  //   "game_cycle_id": game_cycle_id,
+  //   "bet_percent_type": "AdjustPercentType",
+  //   "bet_percent": 0
+  // })
+
+
   // {
   //   "operationName": "AddLotteryTwoSideOrder",
   //   "variables": {
@@ -223,7 +229,7 @@ function paly(game_cycle_id){
   //   },
   //   "query": "mutation AddLotteryTwoSideOrder($orders: [AddLotteryOrderInputObj]) {\n  AddLotteryTwoSideOrder(orders: $orders)\n}\n"
   // }
-  console.log(orders);
+  // console.log(orders);
   let data = JSON.stringify({
     query: `mutation AddLotteryTwoSideOrder($orders: [AddLotteryOrderInputObj]) {\n  AddLotteryTwoSideOrder(orders: $orders)\n}\n`,
     variables: {"orders":orders}
@@ -243,15 +249,15 @@ function paly(game_cycle_id){
   .then((response) => {
     console.log(JSON.stringify(response.data));
     if(response.data.errors&&response.data.errors[0].error_code==10047){
-      let newData=JSON.parse(data)
-      newData.variables.orders[0].bet_multiple=currentBalance
-      config.data=JSON.stringify(newData)
-      axios.request(config).then((response2)=>{
-        console.log(JSON.stringify(response2.data));
-      })
-      if(currentBalance<1){
-        clearInterval(timer1)
-      }
+      // let newData=JSON.parse(data)
+      // newData.variables.orders[0].bet_multiple=currentBalance
+      // config.data=JSON.stringify(newData)
+      // axios.request(config).then((response2)=>{
+      //   console.log(JSON.stringify(response2.data));
+      // })
+      // if(currentBalance<1){
+        // clearInterval(timer1)
+      // }
     };
     playCount++
   })
@@ -290,7 +296,7 @@ async function getBalance(flag){
  }
  if(res.data.data.User.user_balance-balance>1299){
   clearInterval(timer1)
-  toWithdraw()
+  // toWithdraw()
  }
  
 }
@@ -331,31 +337,126 @@ var timer1=null
 async function start(){
   getBalance()
   let nowId=await getNowId()
+  await getHistory()
   //随机生成1到30的数字
   let random= Math.floor(Math.random()*10)
   setTimeout(() => {
     paly(nowId)
   }, random*1000);
 }
-  // var benjin=1000
-  // //随机生成0和1
-  // while(benjin>0){
-  //   let random= Math.floor(Math.random()*2)
-  //   benjin=benjin-100
-  //   if(random==1){
-  //     benjin=benjin+(100*1.992)
-  //   }
-    
-  //   console.log(benjin);
-  // }
+var tzNum=[]
+async function getHistory(){
+  let data = JSON.stringify({
+    "operationName": "GetLotteryCycle",
+    "variables": {
+      "game_id": 218,
+      "row_count": 50
+    },
+    "query": "query GetLotteryCycle($game_id: Int!, $row_count: Int) {\n  LotteryGame(game_id: $game_id) {\n    game_id\n    game_value\n    base_game\n    official_website\n    lottery_cycle_now {\n      now_cycle_id\n      now_cycle_value\n      now_cycle_count_down\n      last_cycle_value\n      last_cycle_game_result\n      future_cycle_list {\n        cycle_id\n        cycle_value\n        __typename\n      }\n      __typename\n    }\n    lottery_result_history(row_count: $row_count) {\n      cycle_value\n      game_result\n      open_time\n      extra_context {\n        hash\n        block\n        __typename\n      }\n      __typename\n    }\n    extra_info {\n      trxbh_account_from\n      trxbh_account_to\n      trxbh_URL\n      __typename\n    }\n    __typename\n  }\n}\n"
+  });
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: baseUrl,
+    headers: { 
+      'Authorization': token, 
+      'Content-Type': 'application'
+    },
+    data : data
+  };
   
-// start()
-// (async () => {
-//   // toWithdraw()
-//  await getBalance(true)
-//   start()
-//   timer1=setInterval(async ()=>{
-//     start()
-//    },1000*60)
-// })()
+  let arrNum=[0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9]
+  let res=await axios.request(config)
+  var numObj={}
+  for (let index = 0; index < 10; index++) {
+   let fIndex= res.data.data.LotteryGame.lottery_result_history.findIndex(item=>{
+      return item.game_result[0]==index
+    })
+    numObj[index]=fIndex
+  
+  }
+
+  // console.log(numObj);
+  function findTwoMaxKeys(obj) {
+    let maxKey1 = null;
+    let maxKey2 = null;
+    let maxValue1 = -Infinity;
+    let maxValue2 = -Infinity;
+  
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'number') {
+        const value = obj[key];
+  
+        if (value > maxValue1) {
+          // 将当前最大值移到第二大
+          maxValue2 = maxValue1;
+          maxKey2 = maxKey1;
+  
+          // 更新最大值
+          maxValue1 = value;
+          maxKey1 = key;
+        } else if (value > maxValue2) {
+          // 更新第二大值
+          maxValue2 = value;
+          maxKey2 = key;
+        }
+      }
+    }
+  
+    return [maxKey1, maxKey2];
+  }
+   // 调用函数找到两个最大值的键
+  let result = findTwoMaxKeys(numObj).map(Number);
+  let kjNum=Number(res.data.data.LotteryGame.lottery_result_history[0].game_result[0])
+  console.log(kjNum+'____'+tzNum);
+  if(tzNum.includes(kjNum)){
+    console.log('中奖了-----------');
+  }else{
+    console.log('再接再厉哦');
+  }
+  let kjNum2=arrNum.slice(kjNum+1,kjNum+6).filter(item=>{
+    return !result.includes(Number(item))
+  })
+  tzNum = kjNum2
+  console.log('差集：', tzNum);
+  //
+  // let history2= res.data.data.LotteryGame.lottery_result_history.map(item=>{
+  //   return item.game_result.slice(0,3).toString()
+  // })
+  // let history2= res.data.data.LotteryGame.lottery_result_history.map(item=>{
+  //   return item.game_result.slice(0,3)
+  // })
+  // let arr=[]
+  // 每个好嘛出现的次数
+  // for (let index = 0; index < 10; index++) {
+  //   console.log(history2.flat().filter(item=>{
+  //     return item==index
+  //   }).length+'------------'+index);
+    
+  // }
+ 
+  // let duplicates = findDuplicates(history2);
+// console.log("重复项: ", duplicates);
+}
+var timer2=null
+clearInterval(timer2)
+// getHistory()
+// timer2=setInterval(() => {
+//   getHistory()
+// }, 1000*60);
+//筛选出数组重复项
+function findDuplicates(array) {
+  let uniqueElements = new Set();
+  let duplicates = new Set();
+
+  for (let element of array) {
+      if (uniqueElements.has(element)) {
+          duplicates.add(element);
+      } else {
+          uniqueElements.add(element);
+      }
+  }
+
+  return Array.from(duplicates);
+}
 }
