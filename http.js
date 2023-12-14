@@ -39,7 +39,6 @@ server.listen(9000, () => {
 app.use(express.json());
 require('./db')(app)
 require('./login')(app)
-require('./lottery')(app)
 require('./chat')(io,app)
 //获取图表数据
 app.post("/api/chartBar", async (req, res) => {
