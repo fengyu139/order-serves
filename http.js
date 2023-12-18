@@ -263,6 +263,19 @@ app.post("/api/updateOrder", async(req, res) => {
   body.orderDetail&&body.orderDetail.forEach((item)=>{
     item.count=Number(item.count)
   })
+  if(body.desk){
+   let deskResult =await findOrder({desk:body.desk,isFinish:false})
+   if(deskResult.length>0){
+     res.send(
+       {
+         code: 0,
+         msg: `${body.desk}桌号已被占用,试试其他吧`,
+         data: ''
+       }
+     )
+     return
+   }
+  }
   updateOrder(body).then(async (result) => {
     if(body.isFinish){
       updateRecords(body)
