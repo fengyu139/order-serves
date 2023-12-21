@@ -31,10 +31,13 @@ const findOrder=async(query)=>{
     delete query.startTime;
     delete query.endTime;
   }
-  if(query.orderName){
-    query={orderName:{$regex:query.orderName}}
+  if(query.orderName||query.searchMoney){
+    query={orderName:{$regex:query.orderName},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):0}}
   }
   return  Order.find(query).exec();
+}
+const orderDelete=async(id)=>{
+  return  Order.deleteOne({id}).exec();
 }
 const updateOrder=(data)=>{
   console.log(data.id);
@@ -130,5 +133,6 @@ module.exports = {
   updateOrder,
   findChart,
   findChartPie,
-  orderTotal
+  orderTotal,
+  orderDelete,
 }

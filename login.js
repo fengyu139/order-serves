@@ -62,7 +62,8 @@ module.exports = app => {
         res.send({
           code: 1,
           msg: '登陆成功',
-          token: tokenStr
+          token: tokenStr,
+          data: tokenStr
         })
   })
   })

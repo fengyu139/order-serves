@@ -40,6 +40,7 @@ app.use(express.json());
 require('./db')(app)
 require('./login')(app)
 require('./chat')(io,app)
+require('./order')(app)
 //获取图表数据
 app.post("/api/chartBar", async (req, res) => {
   console.log(req.userName);
