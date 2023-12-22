@@ -100,28 +100,13 @@ const updateMany=async()=>{
 //       return (this.totalMoney * 100) % 1 !== 0; // 检查小数点后两位是否有值
 //     },
 //   })
-const result=await Order.find({})
-
-  for (const product of result) {
-    // 检查小数点后是否有超过2位的小数
-    if (typeof product.totalMoney === 'string') {
-      console.log(result);
-      // 如果小数点后有超过2位的小数，将其四舍五入为两位小数
-      product.totalMoney = parseFloat(product.totalMoney);
-      // 保存更新后的文档
-      await product.save();
-    }
-  }
-
-  // for (const product of result) {
-  //   // 检查小数点后是否有超过2位的小数
-  //   if (product.totalMoney % 0.01 !== 0) {
-  //     // 如果小数点后有超过2位的小数，将其四舍五入为两位小数
-  //     product.totalMoney = parseFloat(product.totalMoney.toFixed(2));
-  //     // 保存更新后的文档
-  //     await product.save();
-  //   }
-  // }
+const result=await Order.find({ totalMoney: { $exists: true, $type: 'number' } })
+result.forEach(async (doc) => {
+  // 更新字段值为保留两位小数
+  doc.totalMoney = parseFloat(doc.totalMoney.toFixed(2));
+  // 保存更新后的文档
+  await doc.save();
+});
 }
 updateMany()
 // Order.deleteMany({totalMoney:undefined}).then((result)=>{
