@@ -22,6 +22,7 @@ const Order = mongoose.model('Order', order);
 const orderSave=async(data)=>{
   data.userOperation=!!data.userOperation
   data.createdTime=dayjs().format('YYYY-MM-DD HH:mm:ss');
+  data.totalMoney = parseFloat(data.totalMoney.toFixed(2));
   const nOrder = new Order(data);
  return  nOrder.save();
 }
@@ -32,7 +33,7 @@ const findOrder=async(query)=>{
     delete query.endTime;
   }
   if(query.orderName||query.searchMoney){
-    query={orderName:{$regex:query.orderName},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):0}}
+    query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):0}}
   }
   return  Order.find(query).exec();
 }
@@ -41,6 +42,7 @@ const orderDelete=async(id)=>{
 }
 const updateOrder=(data)=>{
   console.log(data.id);
+  data.totalMoney = parseFloat(data.totalMoney.toFixed(2));
   return  Order.updateOne({id:data.id},{...data}).exec();
 }
 const findChart=async(query)=>{

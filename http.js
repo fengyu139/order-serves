@@ -395,7 +395,9 @@ app.post("/api/getMenu", async (req, res) => {
   try {
     let dbRes=await findMenus(req.body)
     dbRes.forEach((item)=>{
-      item.picImg=`http://${ipAddress}:8000/`+item.picImg
+      if(item.picImg){
+        item.picImg=`http://${ipAddress}:8000/`+item.picImg
+      }
     })
     res.send({
       code: 1,
