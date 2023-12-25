@@ -84,6 +84,13 @@ module.exports = app => {
       data:result.balance
     })
   })
+  app.post('/api/authToken',async (req, res) => {
+    res.send({
+      code: 1,
+      msg: 'success',
+      data:req.body.token
+    })
+  })
   const probabilities = [
     { value: 0, probability: 60,bonus:0},
     { value: 1, probability: 25,bonus:5 },

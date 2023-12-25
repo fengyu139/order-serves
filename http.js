@@ -120,8 +120,10 @@ app.post("/api/orderList", (req, res) => {
               "YYYY-MM-DD HH:mm:ss"
             );
            let  records=await findRecords({orderId:item.id,isFinish:false})
+           let  records2=await findRecords({orderId:item.id})
             item.undoneRecord=records.length>0
             item.showTime=createdTime
+            item.isAddMenu=records2.length>0
             item.actualMoney=item.actualMoney||item.totalMoney
     }
     if(req.body.id||req.body.desk){
@@ -211,6 +213,7 @@ app.post("/api/addOrder",async (req, res) => {
     let count=await orderTotal()
     orderFlag=count+1
     body.orderName=body.orderName.split('-')[0]+"-"+(count+1)+"号订单"
+    body.takeMeal=count+1
   }
   if(body.desk){
     let deskResult =await findOrder({desk:body.desk,isFinish:false})

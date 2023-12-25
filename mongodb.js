@@ -16,6 +16,8 @@ const order = new Schema({
   desk:Number,
   undoneRecord:Boolean,
   userOperation:Boolean,
+  takeMeal:Number,
+  isAddMenu:Boolean,
 });
 const Order = mongoose.model('Order', order);
 
@@ -41,8 +43,7 @@ const orderDelete=async(id)=>{
   return  Order.deleteOne({id}).exec();
 }
 const updateOrder=(data)=>{
-  console.log(data.id);
-  data.totalMoney = parseFloat(data.totalMoney.toFixed(2));
+  data.totalMoney = data.totalMoney?parseFloat(Number(data.totalMoney).toFixed(2)):0;
   return  Order.updateOne({id:data.id},{...data}).exec();
 }
 const findChart=async(query)=>{
