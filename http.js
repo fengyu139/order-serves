@@ -123,7 +123,7 @@ app.post("/api/orderList", (req, res) => {
            let  records2=await findRecords({orderId:item.id})
             item.undoneRecord=records.length>0
             item.showTime=createdTime
-            item.isAddMenu=records2.length>0
+            item.isAddMenu=records2.length>1
             item.actualMoney=item.actualMoney||item.totalMoney
     }
     if(req.body.id||req.body.desk){
