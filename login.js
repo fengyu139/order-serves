@@ -6,6 +6,7 @@ const users = new Schema({
   balance: Number
 });
 const jwt = require("jsonwebtoken");
+const {findOrder}=require("./mongodb");
 const expressJWT = require("express-jwt");
 const secretKey = 'lihaichao';
 const noToken=require('./noToken.json')
@@ -33,6 +34,7 @@ module.exports = app => {
   app.use((req, res, next) => {
     if(req.headers.authorization){
       jwt.verify(req.headers.authorization.split(" ")[1],secretKey, (err, decode) => {
+        req.administrator=decode.name||''
         if(decode){
          req.userName=decode.name
         }
@@ -137,6 +139,29 @@ module.exports = app => {
         randomValue,
         balance:result.balance
       }
+    })
+  })
+  app.post('/api/userinfo',async (req, res) => {
+    let result=await Users.findOne({ userName: req.userName })
+    let from={}
+    if(req.userName=='admin'){
+      form={isFinish:true}
+    }else{
+      form={administrator:req.userName,isFinish:true}
+    };
+    let result2=await findOrder(form)
+    let totalMoney=result2.reduce((total,item)=>{
+      return total+item.totalMoney
+    },0)
+    let discountedMoney=totalMoney-(result2.reduce((total,item)=>{
+      return total+(Number(item.actualMoney)||(Number(item.totalMoney)))
+    },0))
+    console.log(result);
+     result.password=''
+    res.send({
+      code: 1,
+      msg: 'success',
+      data:{...(JSON.parse(JSON.stringify(result))),totalMoney:totalMoney.toFixed(2),discountedMoney:discountedMoney.toFixed(2),orderCount:result2.length}
     })
   })
 }

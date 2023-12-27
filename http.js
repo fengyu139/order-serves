@@ -43,8 +43,8 @@ require('./chat')(io,app)
 require('./order')(app)
 //获取图表数据
 app.post("/api/chartBar", async (req, res) => {
-  console.log(req.userName);
   let result1=await findChart(req.body)
+  console.log(result1);
   let barData={
     times:[],
     values:[]
@@ -52,7 +52,7 @@ app.post("/api/chartBar", async (req, res) => {
   result1.forEach((item)=>{
     console.log(item.data);
     barData.times.unshift(item._id.month+"-"+item._id.day)
-    barData.values.unshift(item.data.toFixed(2)+0)
+    barData.values.unshift(item.data.toFixed(2))
   })
   const totalMoney=result1.reduce((a,b)=>{
     return a+b.data
@@ -228,6 +228,7 @@ app.post("/api/addOrder",async (req, res) => {
       return
     }
   }
+  body.administrator=req.administrator
   orderSave(body).then((result) => {
     res.send(
       {

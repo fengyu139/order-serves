@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dayjs = require('dayjs');
+const {updateRecords}=require('./orderRecords')
 const Schema = mongoose.Schema;
 const order = new Schema({
   id: String,
@@ -18,10 +19,12 @@ const order = new Schema({
   userOperation:Boolean,
   takeMeal:Number,
   isAddMenu:Boolean,
+  administrator:String
 });
 const Order = mongoose.model('Order', order);
 
 const orderSave=async(data)=>{
+  console.log(data);
   data.userOperation=!!data.userOperation
   data.createdTime=dayjs().format('YYYY-MM-DD HH:mm:ss');
   data.totalMoney = parseFloat(data.totalMoney.toFixed(2));
@@ -43,7 +46,9 @@ const orderDelete=async(id)=>{
   return  Order.deleteOne({id}).exec();
 }
 const updateOrder=(data)=>{
-  data.totalMoney = data.totalMoney?parseFloat(Number(data.totalMoney).toFixed(2)):0;
+  if(data.totalMoney){
+    data.totalMoney = data.totalMoney?parseFloat(Number(data.totalMoney).toFixed(2)):0;
+  }
   return  Order.updateOne({id:data.id},{...data}).exec();
 }
 const findChart=async(query)=>{
@@ -111,6 +116,17 @@ result.forEach(async (doc) => {
   await doc.save();
 });
 }
+const oneKeyFinish=async()=>{
+  const result=await Order.find({isFinish:false})
+  result.forEach(async (doc) => {
+    doc.isFinish=true
+    doc.actualMoney=doc.totalMoney
+    // 保存更新后的文档
+   await updateRecords({id:doc.id,})
+    await doc.save();
+  });
+  return result
+}
 updateMany()
 // Order.deleteMany({totalMoney:undefined}).then((result)=>{
 //   console.log(result);
@@ -123,4 +139,5 @@ module.exports = {
   findChartPie,
   orderTotal,
   orderDelete,
+  oneKeyFinish,
 }
