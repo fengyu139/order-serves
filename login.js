@@ -34,8 +34,8 @@ module.exports = app => {
   app.use((req, res, next) => {
     if(req.headers.authorization){
       jwt.verify(req.headers.authorization.split(" ")[1],secretKey, (err, decode) => {
-        req.administrator=decode.name||''
         if(decode){
+          req.administrator=decode.name||''
          req.userName=decode.name
         }
          next()
