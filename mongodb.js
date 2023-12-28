@@ -19,7 +19,8 @@ const order = new Schema({
   userOperation:Boolean,
   takeMeal:Number,
   isAddMenu:Boolean,
-  administrator:String
+  administrator:String,
+  isRead:Boolean
 });
 const Order = mongoose.model('Order', order);
 
@@ -41,6 +42,9 @@ const findOrder=async(query)=>{
     query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):0}}
   }
   return  Order.find(query).exec();
+}
+const updateRead=async(id)=>{
+  return  Order.updateOne({id},{isRead:true}).exec();
 }
 const orderDelete=async(id)=>{
   return  Order.deleteOne({id}).exec();
@@ -140,4 +144,5 @@ module.exports = {
   orderTotal,
   orderDelete,
   oneKeyFinish,
+  updateRead,
 }

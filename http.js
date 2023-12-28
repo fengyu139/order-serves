@@ -7,7 +7,7 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const dayjs = require('dayjs');
-const {orderSave,findOrder,updateOrder,findChart,findChartPie,orderTotal}=require("./mongodb");
+const {orderSave,findOrder,updateOrder,findChart,findChartPie,orderTotal,updateRead}=require("./mongodb");
 const {menuSave,findMenus,updateMenu,deleteMenu}=require("./allMenu");
 const {recordsSave,findRecords,updateRecords}=require("./orderRecords");
 const logger = require('./log4jsLogger');
@@ -125,6 +125,9 @@ app.post("/api/orderList", (req, res) => {
             item.showTime=createdTime
             item.isAddMenu=records2.length>1
             item.actualMoney=item.actualMoney||item.totalMoney
+    }
+    if(req.administrator&&req.body.id){
+      await updateRead(req.body.id)
     }
     if(req.body.id||req.body.desk){
       res.send({
