@@ -24,8 +24,8 @@ const findRecords=async(query)=>{
   // }
   return  records.find(query).exec();
 }
-const deleteMenu=async(id)=>{
-  return  AllMenu.deleteOne({id}).exec();
+const deleteRecords=async(id)=>{
+  return  records.deleteMany({orderId:id}).exec();
 }
 const updateRecords=async(data)=>{
   if(data.isItem){
@@ -37,4 +37,5 @@ module.exports = {
   recordsSave,
   findRecords,
   updateRecords,
+  deleteRecords,
 }
