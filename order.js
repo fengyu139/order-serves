@@ -1,4 +1,6 @@
 const {orderDelete,oneKeyFinish}=require("./mongodb");
+const ipAddress = require("./ipAddress");
+const qrCode = require('qrcode');
 module.exports = app => {
     app.post('/api/orderDelete', async (req, res) => {
       try {
@@ -35,5 +37,29 @@ module.exports = app => {
             data: error
           });
       }
+    })
+    app.post('/api/qrCode', async (req, res) => {
+      const options = {
+        margin: 2, // 边距
+        color: { dark: '#007aff', light: '#fff' },
+      };
+      const qrCodeUrl = `http://154.92.15.136:5172/#/pages/orderDetail/orderInfo?id=${req.body.orderId}`
+      const filename=`${req.body.orderId.substr(0,8)}-qrCode.png`
+        qrCode.toFile(`./uploads/${filename}`, qrCodeUrl,options, (err) => {
+          if (err) {
+            console.error('生成二维码失败', err);
+            res.send({
+              code: 0,
+              msg: '生成二维码失败',
+            })
+          } else {
+            res.send({
+              code: 1,
+              msg: 'success',
+              data: `http://${ipAddress}:8000/uploads/`+filename
+            })
+          }
+        });
+       
     })
 }
