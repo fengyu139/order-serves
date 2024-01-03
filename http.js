@@ -12,6 +12,7 @@ const {menuSave,findMenus,updateMenu,deleteMenu}=require("./allMenu");
 const {recordsSave,findRecords,updateRecords}=require("./orderRecords");
 const logger = require('./log4jsLogger');
 const ipAddress = require("./ipAddress");
+const httpLogger=require('./logger')
 function createLogProxy (logLevel, logger) {
   return (...param) => {
       logger[logLevel](...param);
@@ -27,6 +28,7 @@ const app = express();
 app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '200mb' }));
 app.use(cors());
+app.use(httpLogger);
 const server = http.createServer(app);
 const io = socketIo(server ,  {
   cors: {
