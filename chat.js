@@ -36,19 +36,15 @@ module.exports =(io,app)=> {
             socket.broadcast.emit('chat', data);
         })
         socket.on('chatEnter', (data) => {
-          console.log(data);
           socket.broadcast.emit('chatEnter', data);
         })
         socket.on('read',async (data) => {
-          console.log(data);
           socket.broadcast.emit('read', data);
           for (const item of data) {
             let res=await ChatMsg.updateOne({msgId:item.msgId||item},{isRead:true})
-            console.log(res);
           }
         })
         socket.on('chatDelete', (data) => {
-          console.log(data);
           io.sockets.emit('chatDelete', data);
           ChatMsg.deleteOne({msgId:data}).then(res=>{
             console.log(res);
