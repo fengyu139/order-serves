@@ -43,7 +43,7 @@ module.exports = app => {
         margin: 2, // 边距
         color: { dark: '#007aff', light: '#fff' },
       };
-      const qrCodeUrl = `http://154.92.15.136:5172/#/pages/orderDetail/orderInfo?id=${req.body.orderId}`
+      const qrCodeUrl = `http://fy099.xyz/#/pages/orderDetail/orderInfo?id=${req.body.orderId}`
       const filename=`${req.body.orderId.substr(0,8)}-qrCode.png`
         qrCode.toFile(`./uploads/${filename}`, qrCodeUrl,options, (err) => {
           if (err) {
