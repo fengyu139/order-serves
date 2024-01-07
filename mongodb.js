@@ -39,7 +39,7 @@ const findOrder=async(query)=>{
     delete query.endTime;
   }
   if(query.orderName||query.searchMoney){
-    query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):0}}
+    query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):-1}}
   }
   return  Order.find(query).exec();
 }
