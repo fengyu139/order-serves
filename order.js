@@ -38,12 +38,15 @@ module.exports = app => {
           });
       }
     })
+    var baseUrl="http://fy099.xyz/#/"
+    var options = {
+      width: 200, // 二维码宽度
+      height: 200, // 二维码高度
+      margin: 2, // 边距
+      color: { dark: '#000', light: '#fff' },
+    };
     app.post('/api/qrCode', async (req, res) => {
-      const options = {
-        margin: 2, // 边距
-        color: { dark: '#007aff', light: '#fff' },
-      };
-      const qrCodeUrl = `http://fy099.xyz/#/pages/orderDetail/orderInfo?id=${req.body.orderId}`
+      const qrCodeUrl = `${baseUrl}pages/orderDetail/orderInfo?id=${req.body.orderId}`
       const filename=`${req.body.orderId.substr(0,8)}-qrCode.png`
         qrCode.toFile(`./uploads/${filename}`, qrCodeUrl,options, (err) => {
           if (err) {
@@ -61,5 +64,29 @@ module.exports = app => {
           }
         });
        
+    })
+    app.post('/api/addQrCode', async (req, res) => {
+      const { body } = req;
+      let qrCodeUrl = `${baseUrl}pages/orderDetail/index`
+      let filename=`addQrCode.png`
+      if(body.desk){
+        qrCodeUrl = `${baseUrl}pages/orderDetail/index?desk=${body.desk}`
+        filename=`${body.desk}-addQrCode.png`
+      }
+      qrCode.toFile(`./uploads/${filename}`, qrCodeUrl,options, (err) => {
+        if (err) {
+          console.error('生成二维码失败', err);
+          res.send({
+            code: 0,
+            msg: '生成二维码失败',
+          })
+        } else {
+          res.send({
+            code: 1,
+            msg: 'success',
+            data: `http://${ipAddress}:8000/uploads/`+filename
+          })
+        }
+      });
     })
 }
