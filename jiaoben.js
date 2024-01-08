@@ -26,15 +26,32 @@ const Tesseract = require('tesseract.js');
 
 
 // 图片路径
-const imagePath = '/Users/test/Desktop/截图/u=1313425049,3642196824&fm=253&fmt=auto&app=138&f=JPEG.webp';
-// 进行图片文字识别
-Tesseract.recognize(
-  imagePath,
-  'chi_sim', // 语言代码，这里使用英语
-  { logger: info => console.log(info) } // 传入 logger 对象，用于输出调试信息
-).then(({ data: { text } }) => {
-  console.log('识别结果:', text.replace(/\s/g, ''));
-}).catch(error => {
-  console.error('识别错误:', error);
-});
+// const imagePath = '/Users/test/Desktop/截图/u=1313425049,3642196824&fm=253&fmt=auto&app=138&f=JPEG.webp';
+// // 进行图片文字识别
+// Tesseract.recognize(
+//   imagePath,
+//   'chi_sim', // 语言代码，这里使用英语
+//   { logger: info => console.log(info) } // 传入 logger 对象，用于输出调试信息
+// ).then(({ data: { text } }) => {
+//   console.log('识别结果:', text.replace(/\s/g, ''));
+// }).catch(error => {
+//   console.error('识别错误:', error);
+// });
 
+const sharp = require('sharp');
+
+const imagePath = './uploads/domain (1).png';
+
+
+// sharp(imagePath)
+//   .metadata()
+//   .then(metadata => {
+//     const width = metadata.width;
+//     const height = metadata.height;
+//     console.log('图片宽度:', width);
+//     console.log('图片高度:', height);
+//   })
+//   .catch(error => {
+//     console.error('获取图片宽高失败:', error);
+//   });
+// getImageInfo()
