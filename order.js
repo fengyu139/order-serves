@@ -141,4 +141,31 @@ const svgPath = textToSVGInstance.getSVG(text, {
         }
       });
     })
+    //订单图片
+    app.post('/api/orderImg', async (req, res) => {
+      const { body } = req;
+      let oNum=body.takeMeal
+      const svgPath = textToSVGInstance.getSVG(`${oNum}号`, {
+        fontSize: 60,
+        anchor: 'top',
+        attributes: {
+          fill: font.color,
+          background: font.background,
+        },
+      });
+      let resImg=await  sharp(`./uploads/orderNum.jpg`).composite([{
+        input: Buffer.from(svgPath),
+        top:230,
+        left:220
+      }]).toFile(`./uploads/orderNum_${oNum}.jpg`)
+      res.send({
+        code: 1,
+        msg: 'success',
+        data: `http://${ipAddress}:8000/uploads/orderNum_${oNum}.jpg`
+      })
+    })
+   async function testImg(){
+     
+    }
+    // testImg()
 }
