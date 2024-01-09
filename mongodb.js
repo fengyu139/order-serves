@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const dayjs = require('dayjs');
-const {updateRecords,deleteRecords}=require('./orderRecords')
+const {updateRecords,deleteRecords,deleteRecordsAll}=require('./orderRecords')
 const Schema = mongoose.Schema;
 const order = new Schema({
   id: String,
@@ -49,6 +49,10 @@ const updateRead=async(id)=>{
 const orderDelete=async(id)=>{
   await deleteRecords(id)
   return  Order.deleteOne({id}).exec();
+}
+const orderDeleteAll=async(id)=>{
+  await deleteRecordsAll()
+  return  Order.deleteMany({}).exec();
 }
 const updateOrder=(data)=>{
   if(data.totalMoney){
@@ -146,4 +150,5 @@ module.exports = {
   orderDelete,
   oneKeyFinish,
   updateRead,
+  orderDeleteAll
 }

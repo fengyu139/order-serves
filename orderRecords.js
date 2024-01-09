@@ -27,6 +27,9 @@ const findRecords=async(query)=>{
 const deleteRecords=async(id)=>{
   return  records.deleteMany({orderId:id}).exec();
 }
+const deleteRecordsAll=async(id)=>{
+  return  records.deleteMany({}).exec();
+}
 const updateRecords=async(data)=>{
   if(data.isItem){
     return  records.updateMany({id:data.id},{isFinish:data.isFinish}).exec();
@@ -38,4 +41,5 @@ module.exports = {
   findRecords,
   updateRecords,
   deleteRecords,
+  deleteRecordsAll
 }
