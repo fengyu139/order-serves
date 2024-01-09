@@ -2,6 +2,7 @@ const {orderDelete,oneKeyFinish}=require("./mongodb");
 const ipAddress = require("./ipAddress");
 const qrCode = require('qrcode');
 const sharp = require('sharp');
+const textToSVG = require('text-to-svg');
 module.exports = app => {
     app.post('/api/orderDelete', async (req, res) => {
       try {
@@ -72,14 +73,25 @@ module.exports = app => {
       margin: 20, // 边距
       color: { dark: '#000', light: '#fff' },
     };
-    let text = '';
-    const font = {
-      family: 'Arial',
-      size: 60,
-      color: '#fa2c19', // 文字颜色
-      background: '#000000', // 文字背景颜色
+    // let text = '';
+    // const font = {
+    //   family: 'Arial',
+    //   size: 60,
+    //   color: '#fa2c19', // 文字颜色
+    //   background: '#000000', // 文字背景颜色
      
-    };
+    // };
+    let text = '';
+const font = {
+  family: 'Arial',
+  size: 30,
+  color: '#fa2c19', // 文字颜色
+  background: '#000000', // 文字背景颜色
+};
+
+// 创建 text-to-svg 实例
+const textToSVGInstance = textToSVG.loadSync();
+
     app.post('/api/addQrCode', async (req, res) => {
       const { body } = req;
       let qrCodeUrl = `${baseUrl}pages/orderDetail/index`
@@ -88,7 +100,18 @@ module.exports = app => {
         qrCodeUrl = `${baseUrl}pages/orderDetail/index?desk=${body.desk}`
         filename=`${body.desk}-addQrCode.png`
         text = `${body.desk}号桌`
+        
       }
+      // 获取 SVG 路径
+const svgPath = textToSVGInstance.getSVG(text, {
+  fontSize: font.size,
+  anchor: 'top',
+  top: 200,
+  attributes: {
+    fill: font.color,
+    background: font.background,
+  },
+});
       qrCode.toFile(`./uploads/${filename}`, qrCodeUrl,body.desk?options2:options,async (err) => {
         if (err) {
           console.error('生成二维码失败', err);
@@ -99,13 +122,14 @@ module.exports = app => {
         } else {
           if(body.desk){
             let resImg=await  sharp(`./uploads/${filename}`).composite([{
-              input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" height="100"><text x="${body.desk==4?60:80}" y="50"  dominant-baseline="middle" text-anchor="middle"  font-family="${font.family}" font-size="${font.size}" fill="${font.color}" background="${font.background}">${text}</text></svg>`),
-              gravity: 'south',
+              input: Buffer.from(svgPath),
+              top:260,
+              left:85
             }]).extract({
-              left: 80,    // 左边距
-              top: 60,      // 上边距
+              left: 75,    // 左边距
+              top: 70,      // 上边距
               width: 240,   // 裁剪宽度
-              height: 320 
+              height: 300 
             }).toFile(`./uploads/desk_${filename}`)
             filename=`desk_${filename}`
           }
