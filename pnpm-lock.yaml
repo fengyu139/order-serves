@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@img/sharp-darwin-arm64': ^0.33.1
+  '@img/sharp-linux-x64': ^0.33.1
   axios: ^1.6.0
   body-parser: ^1.20.2
   cheerio: ^1.0.0-rc.12
@@ -33,6 +34,7 @@ specifiers:
 
 dependencies:
   '@img/sharp-darwin-arm64': 0.33.1
+  '@img/sharp-linux-x64': 0.33.1
   axios: 1.6.2
   body-parser: 1.20.2
   cheerio: 1.0.0-rc.12
@@ -207,7 +209,6 @@ packages:
     optionalDependencies:
       '@img/sharp-libvips-linux-x64': 1.0.0
     dev: false
-    optional: true
 
   /@img/sharp-linuxmusl-arm64/0.33.1:
     resolution: {integrity: sha512-D3lV6clkqIKUizNS8K6pkuCKNGmWoKlBGh5p0sLO2jQERzbakhu4bVX1Gz+RS4vTZBprKlWaf+/Rdp3ni2jLfA==}
