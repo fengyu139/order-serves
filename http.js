@@ -411,7 +411,7 @@ app.post("/api/getMenu", async (req, res) => {
     res.send({
       code: 1,
       msg: "success",
-      data: dbRes
+      data: dbRes.reverse()
     })
   } catch (error) {
     res.send({
