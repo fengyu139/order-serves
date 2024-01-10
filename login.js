@@ -3,13 +3,15 @@ const Schema = mongoose.Schema;
 const users = new Schema({
   userName: String,
   password: String,
-  balance: Number
+  balance: Number,
+  realName : String
 });
 const jwt = require("jsonwebtoken");
 const {findOrder}=require("./mongodb");
 const expressJWT = require("express-jwt");
 const secretKey = 'lihaichao';
 const noToken=require('./noToken.json')
+const axios = require('axios');
 const Users = mongoose.model('users', users);
 module.exports = app => {
  let noTokenList= noToken.map((item)=>{
@@ -45,29 +47,50 @@ module.exports = app => {
     next()
     
   })
-  app.post('/api/login', (req, res) => {
-    Users.findOne({ userName: req.body.userName }).then((user) => {
-      if (!user) {
-        return res.send({
-          code: 0,
-          msg: '用户不存在'
-        })
-      }
-      if (user.password !== req.body.password) {
-        return res.send({
-          code: 0,
-          msg: '密码错误'
-        })
-      }
-      const { userName } = req.body
-       const tokenStr = jwt.sign({ name:userName }, secretKey, { expiresIn: '5h' })
-        res.send({
-          code: 1,
-          msg: '登陆成功',
-          token: tokenStr,
-          data: tokenStr
-        })
-  })
+  app.post('/api/login',async (req, res) => {
+  let result = await axios.post('http://localhost:7999/api/getUser', { userName: req.body.userName, password: req.body.password })
+  let userData=result.data.data
+  if(!userData){
+    return res.send({
+      code: 0,
+      msg: '用户名或密码错误'
+    })
+  };
+  if(userData.expireDate&&new Date(userData.expireDate).getTime()<new Date().getTime()){
+    return res.send({
+      code: 0,
+      msg: '用户已过期'
+    })
+  }
+  const tokenStr = jwt.sign({ name:userData.userName }, secretKey, { expiresIn: '5h' })
+    res.send({
+      code: 1,
+      msg: '登陆成功',
+      token: tokenStr,
+      data: tokenStr
+    })
+  //   Users.findOne({ userName: req.body.userName }).then((user) => {
+  //     if (!user) {
+  //       return res.send({
+  //         code: 0,
+  //         msg: '用户不存在'
+  //       })
+  //     }
+  //     if (user.password !== req.body.password) {
+  //       return res.send({
+  //         code: 0,
+  //         msg: '密码错误'
+  //       })
+  //     }
+  //     const { userName } = req.body
+  //      const tokenStr = jwt.sign({ name:userName }, secretKey, { expiresIn: '5h' })
+  //       res.send({
+  //         code: 1,
+  //         msg: '登陆成功',
+  //         token: tokenStr,
+  //         data: tokenStr
+  //       })
+  // })
   })
   app.post('/api/register', (req, res) => {
     console.log(req.auth);
@@ -142,21 +165,19 @@ module.exports = app => {
     })
   })
   app.post('/api/userinfo',async (req, res) => {
-    let result=await Users.findOne({ userName: req.userName })
-    let from={}
-    if(req.userName=='admin'){
-      form={isFinish:true}
-    }else{
-      form={administrator:req.userName,isFinish:true}
-    };
-    let result2=await findOrder(form)
+
+    let resultData = await axios.post('http://localhost:7999/api/getUser', { userName: req.userName })
+    let result=resultData.data.data
+    // let result=await Users.findOne({ userName: req.userName })
+    // let from={administrator:result.userName,isFinish:true}
+    let result2=await findOrder({isFinish:true})
     let totalMoney=result2.reduce((total,item)=>{
       return total+item.totalMoney
     },0)
     let discountedMoney=totalMoney-(result2.reduce((total,item)=>{
       return total+(Number(item.actualMoney)||(Number(item.totalMoney)))
     },0))
-    console.log(result);
+    // console.log(result);
      result.password=''
     res.send({
       code: 1,
