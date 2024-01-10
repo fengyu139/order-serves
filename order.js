@@ -2,6 +2,7 @@ const {orderDelete,oneKeyFinish}=require("./mongodb");
 const ipAddress = require("./ipAddress");
 const qrCode = require('qrcode');
 const sharp = require('sharp');
+const serverData=require('./serve.json')
 const textToSVG = require('text-to-svg');
 module.exports = app => {
     app.post('/api/orderDelete', async (req, res) => {
@@ -40,7 +41,7 @@ module.exports = app => {
           });
       }
     })
-    var baseUrl="http://fy099.xyz/#/"
+    var baseUrl=serverData.h5Url
     var options = {
       width: 200, // 二维码宽度
       height: 200, // 二维码高度
@@ -61,7 +62,7 @@ module.exports = app => {
             res.send({
               code: 1,
               msg: 'success',
-              data: `http://${ipAddress}:8000/uploads/`+filename
+              data: `http://${ipAddress}:${serverData.httpPort}/uploads/`+filename
             })
           }
         });
@@ -136,7 +137,7 @@ const svgPath = textToSVGInstance.getSVG(text, {
           res.send({
             code: 1,
             msg: 'success',
-            data: `http://${ipAddress}:8000/uploads/`+filename
+            data: `http://${ipAddress}:${serverData.httpPort}/uploads/`+filename
           })
         }
       });
@@ -161,7 +162,7 @@ const svgPath = textToSVGInstance.getSVG(text, {
       res.send({
         code: 1,
         msg: 'success',
-        data: `http://${ipAddress}:8000/uploads/orderNum_${oNum}.jpg`
+        data: `http://${ipAddress}:${serverData.httpPort}/uploads/orderNum_${oNum}.jpg`
       })
     })
    async function testImg(){

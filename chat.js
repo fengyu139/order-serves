@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const ipAddress = require("./ipAddress");
 const axios = require("axios");
+const serverData=require('./serve.json')
 const Schema = mongoose.Schema;
 const Chat = new Schema({
     name: String,
@@ -26,7 +27,7 @@ module.exports =(io,app)=> {
             console.log(`收到聊天消息: ${JSON.stringify(data)}`);
             // 收到聊天消息
             if(data.type === 'img'||data.type === 'file') {
-                data.picImg=`http://${ipAddress}:8000/`+data.picImg
+                data.picImg=`http://${ipAddress}:${serverData.httpPort}/`+data.picImg
                 data.isRead = false
                 io.sockets.emit('chat', data);
                 ChatMsg.insertMany(data)

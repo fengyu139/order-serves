@@ -7,6 +7,7 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const dayjs = require('dayjs');
+const serverData=require('./serve.json')
 const {orderSave,findOrder,updateOrder,findChart,findChartPie,orderTotal,updateRead}=require("./mongodb");
 const {menuSave,findMenus,updateMenu,deleteMenu}=require("./allMenu");
 const {recordsSave,findRecords,updateRecords}=require("./orderRecords");
@@ -23,7 +24,6 @@ console.info = createLogProxy('info', logger);
 console.warn = createLogProxy('warn', logger);
 console.error = createLogProxy('error', logger);
 //服务端口 
-const port = "8000";
 const app = express();
 app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '200mb' }));
@@ -35,7 +35,7 @@ const io = socketIo(server ,  {
     origin: '*'
 }
 });
-server.listen(9000, () => {
+server.listen(serverData.socketPort, () => {
   // console.log(`server is running at http://127.0.0.1:9000`);
 })
 app.use(express.json());
@@ -405,7 +405,7 @@ app.post("/api/getMenu", async (req, res) => {
     let dbRes=await findMenus(req.body)
     dbRes.forEach((item)=>{
       if(item.picImg){
-        item.picImg=`http://${ipAddress}:8000/`+item.picImg
+        item.picImg=`http://${ipAddress}:${serverData.httpPort}/`+item.picImg
       }
     })
     res.send({
@@ -444,7 +444,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 });
 
 app.use('/uploads', express.static('uploads'));
-app.listen(port,  () => {
+app.listen(serverData.httpPort,  () => {
   // logger.info(`Server running on port ${port}`);
 });
 
