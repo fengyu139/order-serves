@@ -2,7 +2,10 @@
   const cors = require('cors'); // 导入 cors 中间件
 const express = require("express");
 const bodyParser = require('body-parser');
-  mongoose.connect(`mongodb://localhost:27017/user-db`,
+const ipAddress = require("./ipAddress");
+const dbUrl1=`mongodb://localhost:27017/user-db`
+const dbUrl2=`mongodb://xiaohuzi099:123456aa@localhost:27017/user-db?authSource=admin`
+  mongoose.connect(`${ipAddress.substring(0,3)=='192' ? dbUrl1 : dbUrl2}`,
   ).then(() => {
     console.log('连接成功');
   }).catch(err => {
