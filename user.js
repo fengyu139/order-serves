@@ -32,9 +32,19 @@ app.post('/api/getUser', async (req, res) => {
     })
 })
 app.post('/api/addAccount', async (req, res) => {
+   let hasUser= await Users.findOne({userName:req.body.userName})
+   if(hasUser){
+    return res.send({
+        code: 0,
+        msg: '用户已存在',
+        data:''
+    })
+   }
     Users.create(req.body).then((result) => {
     res.send({
-        data:result
+        code: 1,
+        data:result,
+        msg:''
     })
     })
 })

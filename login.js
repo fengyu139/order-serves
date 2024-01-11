@@ -189,11 +189,7 @@ module.exports = app => {
     console.log(req.body);
     try {
       let resultData = await axios.post('http://localhost:7999/api/addAccount', req.body)
-      res.send({
-        code: 1,
-        msg: 'success',
-        data:''
-      })
+      res.send(resultData.data)
     } catch (error) {
       res.send({
         code: 0,
