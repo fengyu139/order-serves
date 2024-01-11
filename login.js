@@ -59,7 +59,7 @@ module.exports = app => {
   if(userData.expireDate&&new Date(userData.expireDate).getTime()<new Date().getTime()){
     return res.send({
       code: 0,
-      msg: '用户已过期'
+      msg: '账号已到期,请联系供应商'
     })
   }
   const tokenStr = jwt.sign({ name:userData.userName }, secretKey, { expiresIn: '5h' })
@@ -184,5 +184,61 @@ module.exports = app => {
       msg: 'success',
       data:{...(JSON.parse(JSON.stringify(result))),totalMoney:totalMoney.toFixed(2),discountedMoney:discountedMoney.toFixed(2),orderCount:result2.length}
     })
+  })
+  app.post('/api/addAccount',async (req, res) => {
+    console.log(req.body);
+    try {
+      let resultData = await axios.post('http://localhost:7999/api/addAccount', req.body)
+      res.send({
+        code: 1,
+        msg: 'success',
+        data:''
+      })
+    } catch (error) {
+      res.send({
+        code: 0,
+        msg: error.message,
+        data:''
+      })
+    }
+   
+  })
+  app.post('/api/editAccount',async (req, res) => {
+    console.log(req.body);
+    try {
+      let resultData = await axios.post('http://localhost:7999/api/editAccount', req.body)
+      res.send({
+        code: 1,
+        msg: 'success',
+        data:''
+      })
+    } catch (error) {
+      res.send({
+        code: 0,
+        msg: error.message,
+        data:''
+      })
+    }
+   
+  })
+  app.post('/api/getAccount',async (req, res) => {
+    console.log(req.body);
+    try {
+      let resultData = await axios.post('http://localhost:7999/api/getAccount')
+      res.send({
+        code: 1,
+        msg: 'success',
+        data:resultData.data.data.map((item)=>{
+          return {value:item.userName,text:item.userName,expireDate:item.expireDate}
+        })
+      })
+    } catch (error) {
+      res.send({
+        code: 0,
+        msg: error.message,
+        data:''
+      })
+    }
+   
   })
 }

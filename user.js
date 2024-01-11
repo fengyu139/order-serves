@@ -28,14 +28,26 @@ app.post('/api/getUser', async (req, res) => {
         data:result
     })
 })
-// Users.create({
-//     userName: 'sk001',
-//     password: '123456aa',
-//     realName:'烧烤一号',
-//     expireDate:new Date('2024-01-30'),
-// }).then((result) => {
-//     console.log(result);
-// })
+app.post('/api/addAccount', async (req, res) => {
+    Users.create(req.body).then((result) => {
+    res.send({
+        data:result
+    })
+    })
+})
+app.post('/api/editAccount', async (req, res) => {
+    Users.updateOne({userName:req.body.userName},req.body).then((result) => {
+    res.send({
+        data:result
+    })
+    })
+})
+app.post('/api/getAccount', async (req, res) => {
+    let result=await Users.find({})
+    res.send({
+        data:result
+    })
+})
 app.listen(7999, () => {
     console.log('Server running on port 7999');
 })
