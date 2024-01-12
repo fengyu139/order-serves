@@ -1,4 +1,4 @@
-const {orderDelete,oneKeyFinish}=require("./mongodb");
+const {orderDelete,oneKeyFinish,checkOrderStatus}=require("./mongodb");
 const ipAddress = require("./ipAddress");
 const qrCode = require('qrcode');
 const sharp = require('sharp');
@@ -165,6 +165,16 @@ const svgPath = textToSVGInstance.getSVG(text, {
         data: `http://${ipAddress}:${serverData.httpPort}/uploads/orderNum_${oNum}.jpg`
       })
     })
+    // 检查订单状态
+    app.post('/api/checkOrderStatus', async (req, res) => {
+      let result=await checkOrderStatus(req.body.id)
+      res.send({
+        code: 1,
+        msg: 'success',
+        data: result.length>0
+      })
+    })
+    
    async function testImg(){
      
     }

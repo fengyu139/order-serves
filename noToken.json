@@ -10,5 +10,6 @@
   "/lottery",
   "/chatList",
   "/foodList",
-  "/orderImg"
+  "/orderImg",
+  "/checkOrderStatus"
 ]

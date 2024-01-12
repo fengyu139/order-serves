@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const dayjs = require('dayjs');
 const {updateRecords,deleteRecords,deleteRecordsAll}=require('./orderRecords')
+const {saveDevice,findDevice}=require('./device')
 const Schema = mongoose.Schema;
 const order = new Schema({
   id: String,
@@ -20,15 +21,25 @@ const order = new Schema({
   takeMeal:Number,
   isAddMenu:Boolean,
   administrator:String,
-  isRead:Boolean
+  isRead:Boolean,
+  deviceNo:String
 });
 const Order = mongoose.model('Order', order);
 
 const orderSave=async(data)=>{
-  console.log(data);
   data.userOperation=!!data.userOperation
   data.createdTime=dayjs().format('YYYY-MM-DD HH:mm:ss');
   data.totalMoney = parseFloat(data.totalMoney.toFixed(2));
+  if(data.deviceNo){    
+      let deviceName=await findDevice(data.deviceNo)
+      console.log(deviceName);
+      if(deviceName){
+      data.deviceNo=deviceName
+    }else{
+     let newDeviceName= await saveDevice(data.deviceNo)
+     data.deviceNo=newDeviceName
+    }
+  }
   const nOrder = new Order(data);
  return  nOrder.save();
 }
@@ -136,7 +147,11 @@ const oneKeyFinish=async()=>{
   });
   return result
 }
-updateMany()
+const checkOrderStatus=async(data)=>{
+  const result=await Order.find({id:data,isFinish:false})
+  return result
+}
+// updateMany()
 // Order.deleteMany({totalMoney:undefined}).then((result)=>{
 //   console.log(result);
 // })
@@ -150,5 +165,6 @@ module.exports = {
   orderDelete,
   oneKeyFinish,
   updateRead,
-  orderDeleteAll
+  orderDeleteAll,
+  checkOrderStatus
 }
