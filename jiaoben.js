@@ -55,3 +55,12 @@ const imagePath = './uploads/domain (1).png';
 //     console.error('获取图片宽高失败:', error);
 //   });
 // getImageInfo()
+var a = {
+    num: 0,
+    valueOf:function(){
+        return this.num++
+    }
+}
+console.log(a);
+console.log(a);
+console.log(a);

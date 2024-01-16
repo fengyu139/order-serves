@@ -43,6 +43,7 @@ require('./db')(app)
 require('./login')(app)
 require('./chat')(io,app)
 require('./order')(app)
+require('./article')(app)
 //获取图表数据
 app.post("/api/chartBar", async (req, res) => {
   let result1=await findChart(req.body)
