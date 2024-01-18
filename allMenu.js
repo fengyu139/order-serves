@@ -48,6 +48,9 @@ const updateMenu=async(data)=>{
 if(newUrl){data.picImg=newUrl}
   return  AllMenu.updateOne({id:data.id},{...data}).exec();
 }
+// AllMenu.updateMany({},{merchantID:'1705492345914'}).then((result)=>{
+//   console.log(result);
+// })
 async function cutOffImg(imagePath){
   if(!imagePath){
     return
