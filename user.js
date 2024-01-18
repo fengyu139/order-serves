@@ -7,7 +7,7 @@ const dbUrl1=`mongodb://localhost:27017/user-db`
 const dbUrl2=`mongodb://xiaohuzi099:123456aa@localhost:27017/user-db?authSource=admin`
   mongoose.connect(`${ipAddress.substring(0,3)=='192' ? dbUrl1 : dbUrl2}`,
   ).then(() => {
-    console.log('连接成功');
+    console.log('user-连接成功');
   }).catch(err => {
     console.log('数据库连接失败', err);
   })
@@ -17,7 +17,8 @@ const users = new Schema({
   password: String,
   balance: Number,
   realName :String,
-  expireDate:Date
+  expireDate:Date,
+  merchantID:String
   
 });
 const Users = mongoose.model('users', users);
@@ -26,6 +27,7 @@ app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '200mb' }));
 app.use(cors());
 app.post('/api/getUser', async (req, res) => {
+  console.log(req.body);
     let result=await Users.findOne(req.body)
     res.send({
         data:result
@@ -40,6 +42,7 @@ app.post('/api/addAccount', async (req, res) => {
         data:''
     })
    }
+   req.body.merchantID=new Date().getTime()
     Users.create(req.body).then((result) => {
     res.send({
         code: 1,

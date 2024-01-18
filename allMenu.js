@@ -10,7 +10,8 @@ const order = new Schema({
   picImg:String,
   isOnline:Boolean,
   count:Number,
-  unit:String
+  unit:String,
+  merchantID:String
 });
 const AllMenu = mongoose.model('allMenu', order);
 const menuSave=async(data)=>{
@@ -29,14 +30,15 @@ const menuSave=async(data)=>{
   }
 return  AllMenu.insertMany(data);
 }
+
 const findMenus=async(query)=>{
   if(query.type){
     return  AllMenu.find({...query}).exec();
   }
   if(query.filter){
-    return  AllMenu.find({isOnline:true}).exec();
+    return  AllMenu.find({isOnline:true,merchantID:query.merchantID}).exec();
   }
-  return  AllMenu.find({}).exec();
+  return  AllMenu.find({merchantID:query.merchantID}).exec();
 }
 const deleteMenu=async(id)=>{
   return  AllMenu.deleteOne({id}).exec();

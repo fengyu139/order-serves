@@ -67,7 +67,10 @@ module.exports = app => {
       code: 1,
       msg: '登陆成功',
       token: tokenStr,
-      data: tokenStr
+      data:{
+        tokenStr,
+        merchantID:userData.merchantID
+      }
     })
   //   Users.findOne({ userName: req.body.userName }).then((user) => {
   //     if (!user) {
@@ -170,7 +173,7 @@ module.exports = app => {
     let result=resultData.data.data
     // let result=await Users.findOne({ userName: req.userName })
     // let from={administrator:result.userName,isFinish:true}
-    let result2=await findOrder({isFinish:true})
+    let result2=await findOrder({isFinish:true,merchantID:result.merchantID})
     let totalMoney=result2.reduce((total,item)=>{
       return total+item.totalMoney
     },0)

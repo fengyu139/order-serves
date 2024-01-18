@@ -25,7 +25,7 @@ module.exports = app => {
     })
     app.post('/api/oneKeyFinish', async (req, res) => {
       try {
-    await oneKeyFinish(req.body.id);
+    await oneKeyFinish(req.body);
       console.log('一键完成成功---');
       res.send({
         code: 1,
@@ -95,10 +95,10 @@ const textToSVGInstance = textToSVG.loadSync();
 
     app.post('/api/addQrCode', async (req, res) => {
       const { body } = req;
-      let qrCodeUrl = `${baseUrl}pages/orderDetail/index`
+      let qrCodeUrl = `${baseUrl}pages/orderDetail/index?merchantID=${body.merchantID}`
       let filename=`addQrCode.png`
       if(body.desk){
-        qrCodeUrl = `${baseUrl}pages/orderDetail/index?desk=${body.desk}`
+        qrCodeUrl = `${baseUrl}pages/orderDetail/index?desk=${body.desk}&merchantID=${body.merchantID}`
         filename=`${body.desk}-addQrCode.png`
         text = `${body.desk}号桌`
         

@@ -22,7 +22,8 @@ const order = new Schema({
   isAddMenu:Boolean,
   administrator:String,
   isRead:Boolean,
-  deviceNo:String
+  deviceNo:String,
+  merchantID:String
 });
 const Order = mongoose.model('Order', order);
 
@@ -50,10 +51,13 @@ const findOrder=async(query)=>{
     delete query.endTime;
   }
   if(query.orderName||query.searchMoney){
-    query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):-1}}
+    query={orderName:{$regex:query.orderName||''},totalMoney:{$gt:query.searchMoney? Number(query.searchMoney):-1},merchantID:query.merchantID}
   }
   return  Order.find(query).exec();
 }
+// Order.updateMany({},{merchantID:'1705492322914'}).then((result)=>{
+//   console.log(result);
+// })
 const updateRead=async(id)=>{
   return  Order.updateOne({id},{isRead:true}).exec();
 }
@@ -83,6 +87,7 @@ const findChart=async(query)=>{
         $lt: end,
       },
       isFinish: true,
+      merchantID:query.merchantID
     },
   },
   {
@@ -115,10 +120,10 @@ const findChart=async(query)=>{
 
 }
 const findChartPie=(query)=>{
-  return  Order.find({createdTime:{$gte:query.startTime,$lt:query.endTime}}).select('orderDetail').exec();
+  return  Order.find({createdTime:{$gte:query.startTime,$lt:query.endTime}, merchantID:query.merchantID,isFinish:true}).select('orderDetail').exec();
 }
-const orderTotal=async()=>{
-  const count = await Order.countDocuments();
+const orderTotal=async(query)=>{
+  const count = await Order.countDocuments({merchantID:query.merchantID});
   return  count
 }
 
@@ -136,8 +141,8 @@ result.forEach(async (doc) => {
   await doc.save();
 });
 }
-const oneKeyFinish=async()=>{
-  const result=await Order.find({isFinish:false})
+const oneKeyFinish=async(query)=>{
+  const result=await Order.find({isFinish:false,merchantID:query.merchantID})
   result.forEach(async (doc) => {
     doc.isFinish=true
     doc.actualMoney=doc.totalMoney

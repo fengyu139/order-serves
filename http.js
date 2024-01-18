@@ -216,13 +216,13 @@ app.post("/api/addOrder",async (req, res) => {
   })
   let orderFlag=0
   if(!body.desk&&body.userOperation){
-    let count=await orderTotal()
+    let count=await orderTotal(body)
     orderFlag=count+1
     body.orderName=body.orderName.split('-')[0]+"-"+(count+1)+"号订单"
     body.takeMeal=count+1
   }
   if(body.desk){
-    let deskResult =await findOrder({desk:body.desk,isFinish:false})
+    let deskResult =await findOrder({desk:body.desk,isFinish:false,merchantID:body.merchantID})
     if(deskResult.length>0){
       res.send(
         {
@@ -402,6 +402,7 @@ app.post("/api/deleteMenu", (req, res) => {
 
 // 获取和查询菜单
 app.post("/api/getMenu", async (req, res) => {
+  console.log(req.body);
   try {
     let dbRes=await findMenus(req.body)
     dbRes.forEach((item)=>{
