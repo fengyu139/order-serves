@@ -40,4 +40,12 @@ app.post('/api/addArticle', async (req, res) => {
     data:''
   })
 })
+app.post('/api/deleteArticle', async (req, res) => {
+await articles.deleteOne({_id:req.body.id})
+res.send({
+  code: 1,
+  data:''
+})
+})
+
 }
