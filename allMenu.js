@@ -14,20 +14,26 @@ const order = new Schema({
   merchantID:String
 });
 const AllMenu = mongoose.model('allMenu', order);
-const menuSave=async(data)=>{
+const menuSave=async(data,flag)=>{
   if(!Array.isArray(data)){
     data.id=uuidv4();
-    let newUrl=await cutOffImg(data.picImg)
-    if(newUrl){data.picImg=newUrl}
+    if(!flag){
+      let newUrl=await cutOffImg(data.picImg)
+      if(newUrl){data.picImg=newUrl}
+    }
     data=[data]
   }else{
-    data=data.map(async (item,index)=>{
+    // console.log(data);
+    data=data.map( (item,index)=>{
       item.id=uuidv4();
-      let newUrl=await cutOffImg(item.picImg)
-      if(newUrl){item.picImg=newUrl}
+      // if(!flag){ 
+      //   let newUrl=await cutOffImg(item.picImg)
+      //   if(newUrl){item.picImg=newUrl}
+      // }
       return item;
     })
   }
+  console.log(data);
 return  AllMenu.insertMany(data);
 }
 

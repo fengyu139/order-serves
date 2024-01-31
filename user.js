@@ -42,7 +42,6 @@ app.post('/api/addAccount', async (req, res) => {
         data:''
     })
    }
-   req.body.merchantID=new Date().getTime()
     Users.create(req.body).then((result) => {
     res.send({
         code: 1,

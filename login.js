@@ -8,6 +8,7 @@ const users = new Schema({
 });
 const jwt = require("jsonwebtoken");
 const {findOrder}=require("./mongodb");
+const {findMenus,menuSave}=require("./allMenu");
 const expressJWT = require("express-jwt");
 const secretKey = 'lihaichao';
 const noToken=require('./noToken.json')
@@ -190,6 +191,11 @@ module.exports = app => {
   })
   app.post('/api/addAccount',async (req, res) => {
     console.log(req.body);
+    req.body.merchantID=new Date().getTime()
+    if(req.body.syncMerchantID){
+     let menuList=await findMenus({merchantID:req.body.syncMerchantID})
+     await menuSave(menuList.map(item=>({merchantID:req.body.merchantID,name:item.name,type:item.type,price:item.price,unit:item.unit,isOnline:item.isOnline,picImg:item.picImg})),true)
+    }
     try {
       let resultData = await axios.post('http://localhost:7999/api/addAccount', req.body)
       res.send(resultData.data)
@@ -228,7 +234,7 @@ module.exports = app => {
         code: 1,
         msg: 'success',
         data:resultData.data.data.map((item)=>{
-          return {value:item.userName,text:item.userName,expireDate:item.expireDate}
+          return {value:item.userName,text:item.userName,expireDate:item.expireDate,merchantID:item.merchantID}
         })
       })
     } catch (error) {
