@@ -1,0 +1,127 @@
+在 Linux 下搭建 Shadowsocks 服务器，你可以按照以下步骤进行。Shadowsocks 是一种加密的代理协议，可以帮助你绕过网络限制。以下步骤适用于大多数常见的 Linux 发行版（如 Ubuntu、Debian、CentOS 等）。
+
+步骤 1：更新系统
+在开始之前，确保你的系统软件包是最新的。
+
+sh
+
+sudo apt update && sudo apt upgrade -y
+对于 CentOS:
+
+sh
+
+sudo yum update -y
+步骤 2：安装 Python
+Shadowsocks 可以通过 Python 安装。如果系统中还没有安装 Python，可以使用以下命令进行安装。
+
+在 Debian/Ubuntu 上:
+
+sh
+
+sudo apt install python3 python3-pip -y
+在 CentOS 上:
+
+sh
+
+sudo yum install python3 python3-pip -y
+步骤 3：安装 Shadowsocks
+使用 pip 安装 Shadowsocks。
+
+sh
+
+sudo pip3 install shadowsocks
+步骤 4：配置 Shadowsocks
+创建 Shadowsocks 配置文件：
+
+sh
+
+sudo nano /etc/shadowsocks.json
+在文件中输入以下配置：
+
+json
+
+{
+    "server": "0.0.0.0",
+    "server_port": 8388,
+    "local_address": "127.0.0.1",
+    "local_port": 1080,
+    "password": "your_password",
+    "timeout": 300,
+    "method": "aes-256-cfb",
+    "fast_open": false,
+    "workers": 1
+}
+确保将 "password": "your_password" 替换为一个强密码。
+
+步骤 5：启动 Shadowsocks
+使用以下命令启动 Shadowsocks：
+
+sh
+
+sudo ssserver -c /etc/shadowsocks.json -d start
+你可以通过以下命令停止 Shadowsocks：
+
+sh
+
+sudo ssserver -c /etc/shadowsocks.json -d stop
+步骤 6：设置 Shadowsocks 开机启动
+在 Debian/Ubuntu 上，可以创建一个 systemd 服务文件：
+
+sh
+
+sudo nano /etc/systemd/system/shadowsocks.service
+输入以下内容：
+
+ini
+
+[Unit]
+Description=Shadowsocks
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks.json
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+保存并关闭文件，然后启用并启动服务：
+
+sh
+
+sudo systemctl enable shadowsocks
+sudo systemctl start shadowsocks
+在 CentOS 上，步骤类似：
+
+sh
+
+sudo nano /etc/systemd/system/shadowsocks.service
+输入相同的服务配置内容，保存并关闭文件，然后启用并启动服务：
+
+sh
+
+sudo systemctl enable shadowsocks
+sudo systemctl start shadowsocks
+步骤 7：配置防火墙
+确保防火墙允许 Shadowsocks 使用的端口（如配置中的 8388）。
+
+在 Debian/Ubuntu 上：
+
+sh
+
+sudo ufw allow 8388/tcp
+sudo ufw allow 8388/udp
+在 CentOS 上：
+
+sh
+
+sudo firewall-cmd --permanent --add-port=8388/tcp
+sudo firewall-cmd --permanent --add-port=8388/udp
+
+sudo firewall-cmd --reload
+总结
+通过上述步骤，你可以在 Linux 服务器上成功搭建 Shadowsocks 服务器。确保使用强密码和适当的加密方法以提高安全性。此外，记得定期更新和维护你的服务器以确保其安全和稳定。
+
+
+教程网站：https://lixinyu1024.oss-cn-beijing.aliyuncs.com/post/share/1507393592.html
+
+squid搭建：https://www.cnblogs.com/JiHC/p/17276521.html

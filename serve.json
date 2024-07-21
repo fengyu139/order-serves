@@ -1,0 +1,8 @@
+{
+  "name": "server",
+  "path": "/Users/test/Desktop/work/preject/myGit/moreServes/server1",
+  "dataBase": "server-database",
+  "httpPort": "8000",
+  "socketPort": "9000",
+  "h5Url": "http://fy099.xyz/#/"
+}

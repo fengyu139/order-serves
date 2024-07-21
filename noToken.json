@@ -1,0 +1,16 @@
+[
+  "/login",
+  "/getMenu",
+  "/orderList",
+  "/updateOrder",
+  "/addOrder",
+  "/addFoods",
+  "/recordsList",
+  "/upload",
+  "/lottery",
+  "/chatList",
+  "/foodList",
+  "/orderImg",
+  "/checkOrderStatus",
+  "/chatSend"
+]
