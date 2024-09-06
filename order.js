@@ -1,4 +1,4 @@
-const {orderDelete,oneKeyFinish,checkOrderStatus}=require("./mongodb");
+const {orderDelete,oneKeyFinish,checkOrderStatus,orderTotal}=require("./mongodb");
 const ipAddress = require("./ipAddress");
 const qrCode = require('qrcode');
 // const sharp = require('sharp');
@@ -174,9 +174,12 @@ const svgPath = textToSVGInstance.getSVG(text, {
         data: result.length>0
       })
     })
-    
-   async function testImg(){
-     
-    }
-    // testImg()
+    app.get('/api/getOrderTotal', async (req, res) => {
+      let result=await orderTotal({merchantID:req.headers.merchantid})
+      res.send({
+        code: 1,
+        msg: 'success',
+        data: result
+      })
+    })
 }

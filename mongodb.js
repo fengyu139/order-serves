@@ -123,7 +123,9 @@ const findChartPie=(query)=>{
   return  Order.find({createdTime:{$gte:query.startTime,$lt:query.endTime}, merchantID:query.merchantID,isFinish:true}).select('orderDetail').exec();
 }
 const orderTotal=async(query)=>{
-  const count = await Order.countDocuments({merchantID:query.merchantID});
+  let startTime= dayjs().format('YYYY-MM-DD 00:00:00')
+  let endTime= dayjs().format('YYYY-MM-DD 23:59:59')
+  const count = await Order.countDocuments({createdTime:{$gte:startTime,$lt:endTime},merchantID:query.merchantID});
   return  count
 }
 
@@ -156,6 +158,11 @@ const checkOrderStatus=async(data)=>{
   const result=await Order.find({id:data,isFinish:false})
   return result
 }
+const queryTodayCount=async(query)=>{
+  const start=new Date(query.startTime)
+  const end=new Date(query.endTime)
+  return Order.countDocuments({createdTime:{$gte:start,$lt:end},merchantID:query.merchantID})
+}
 // updateMany()
 // Order.deleteMany({totalMoney:undefined}).then((result)=>{
 //   console.log(result);
@@ -171,5 +178,6 @@ module.exports = {
   oneKeyFinish,
   updateRead,
   orderDeleteAll,
-  checkOrderStatus
+  checkOrderStatus,
+  queryTodayCount
 }
