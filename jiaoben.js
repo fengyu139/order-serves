@@ -76,10 +76,10 @@ const fs = require('fs');
 const textToRemove = '请收藏本站：https://www.bg60.cc。笔趣阁手机版：https://m.bg60.cc『点此报错』『加入书签';
 // https://www.bg60.cc/book/9289/ 北派盗墓笔记  777页
 async function getText() {
-    let num=349
+    let num=600
     let text=''
        function sendAxios() {
-        if(num<600){
+        if(num<1200){
             axios.get(`https://www.bg60.cc/book/9289/${num}.html`).then((res)=>{
             const $ = cheerio.load(res.data);
             // 根据div的class或者id选择器来获取内容

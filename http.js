@@ -434,10 +434,9 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname); // 文件名会添加时间戳，以避免重名
   },
 });
-const upload = multer({ storage, limits: {
-  fileSize: 1024 * 1024 * 200, // 限制文件大小为 5MB，根据需求调整
-}, });
+const upload = multer({ storage});
 app.post('/api/upload', upload.single('image'), (req, res) => {
+  console.log(req.file)
   // 文件已上传成功
   res.send({
     code: 1,

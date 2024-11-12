@@ -125,3 +125,13 @@ sudo firewall-cmd --reload
 教程网站：https://lixinyu1024.oss-cn-beijing.aliyuncs.com/post/share/1507393592.html
 
 squid搭建：https://www.cnblogs.com/JiHC/p/17276521.html
+
+linux安装Shadowsocks https://rongsp.com/article/123.html
+
+//拉取服务器资源。3c8P19Fa
+scp root@154.92.15.136:/ytobe/study1.mp4 /Users/test/Desktop/work/preject/ytobe
+//本地上传服务器
+scp /Users/test/Desktop/startwm.sh root@154.92.15.136:/etc/xrdp/
+cd /www/wwwroot/node1.1/order-serves
+ssh root@154.92.15.136
+ssh Administrator@183.2.216.132
