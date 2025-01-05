@@ -73,21 +73,25 @@ const fs = require('fs');
 //   "statusBar.debuggingBackground": "#cc3700",
 //   "statusBar.debuggingForeground": "#ffffff",
 // },
-const textToRemove = '请收藏本站：https://www.bg60.cc。笔趣阁手机版：https://m.bg60.cc『点此报错』『加入书签';
+const textToRemove = '请收藏本站：https://www.bq05.cc。笔趣阁手机版：https://m.bq05.cc『点此报错』『加入书签』';
 // https://www.bg60.cc/book/9289/ 北派盗墓笔记  777页
+// https://www.bg60.cc/book/111116/1.html 妖刀记
+// https://www.bg60.cc/book/31382/2.html 鬼吹灯 250页
+// https://www.bq05.cc/html/40286/143.html 我当道士那些年
+// https://www.bq05.cc/html/85222/4.html 在细雨中呐喊
 async function getText() {
-    let num=600
+    let num=4
     let text=''
        function sendAxios() {
-        if(num<1200){
-            axios.get(`https://www.bg60.cc/book/9289/${num}.html`).then((res)=>{
+        if(num<40){
+            axios.get(`https://www.bq05.cc/html/85222/${num}.html`).then((res)=>{              
             const $ = cheerio.load(res.data);
             // 根据div的class或者id选择器来获取内容
             let str=$('.content .wap_none').text()
             let str2=str.slice(0, str.indexOf('新书推荐'))
             console.log(str2);
             const divContent =str2+"--"+$('#chaptercontent').text();
-        
+            
             // 打印内容
             // console.log(typeof divContent);
             let current=divContent.replace(/\r?\n|\r|\s/g, '').replace(new RegExp(textToRemove, 'g'), '')
@@ -101,7 +105,7 @@ async function getText() {
                   console.error('文件写入失败:', err);
                   return;
                 }
-                console.log(`失败后的内容已写入新文件当前章数-${num} processed_example.txt`);
+                console.log(`失败后的内容已写入新文件当前章数-${num} book2.txt`);
               });
         })
         }else{
@@ -110,7 +114,7 @@ async function getText() {
                   console.error('文件写入失败:', err);
                   return;
                 }
-                console.log('处理后的内容已写入新文件 processed_example.txt');
+                console.log('处理后的内容已写入新文件 book2.txt');
               });
         }
        }
