@@ -12,5 +12,6 @@
   "/foodList",
   "/orderImg",
   "/checkOrderStatus",
-  "/chatSend"
+  "/chatSend",
+  "/refreshToken"
 ]

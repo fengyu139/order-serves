@@ -79,12 +79,14 @@ const textToRemove = '请收藏本站：https://www.bq05.cc。笔趣阁手机版
 // https://www.bg60.cc/book/31382/2.html 鬼吹灯 250页
 // https://www.bq05.cc/html/40286/143.html 我当道士那些年
 // https://www.bq05.cc/html/85222/4.html 在细雨中呐喊
+// https://www.bq05.cc/html/88544/1.html 许三观卖血记
+// https://www.bq05.cc/html/74858/1.html 平凡的世界
 async function getText() {
-    let num=4
+    let num=1
     let text=''
        function sendAxios() {
-        if(num<40){
-            axios.get(`https://www.bq05.cc/html/85222/${num}.html`).then((res)=>{              
+        if(num<56){
+            axios.get(`https://www.bq05.cc/html/74858/${num}.html`).then((res)=>{              
             const $ = cheerio.load(res.data);
             // 根据div的class或者id选择器来获取内容
             let str=$('.content .wap_none').text()
@@ -121,3 +123,46 @@ async function getText() {
        sendAxios()
 }
 getText()
+
+
+
+
+
+async function getBook(){
+    let num=1
+    let text=''
+       function sendAxios() {
+        if(num<26){
+            axios.get(`http://st.kanxshuo.com/book-116852-${num}.html`).then((res)=>{              
+            const $ = cheerio.load(res.data);
+            const divContent =$('.bookContent').text()
+            
+            // 打印内容
+            // console.log(typeof divContent);
+            let current=divContent.replace(/\r?\n|\r|\s/g, '').replace(new RegExp(textToRemove, 'g'), '')
+            text=text+current
+            num++
+            sendAxios()
+        }).catch((err)=>{
+            console.log(err);
+            fs.writeFile('processed_example.txt', text, 'utf8', (err) => {
+                if (err) {
+                  console.error('文件写入失败:', err);
+                  return;
+                }
+                console.log(`失败后的内容已写入新文件当前章数-${num} book2.txt`);
+              });
+        })
+        }else{
+            fs.writeFile('processed_example.txt', text, 'utf8', (err) => {
+                if (err) {
+                  console.error('文件写入失败:', err);
+                  return;
+                }
+                console.log('处理后的内容已写入新文件 book2.txt');
+              });
+        }
+       }
+       sendAxios()
+}
+// getBook()

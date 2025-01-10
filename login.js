@@ -246,4 +246,30 @@ module.exports = app => {
     }
    
   })
+  app.post('/api/refreshToken', (req, res) => {
+    if(req.headers.authorization){
+      jwt.verify(req.headers.authorization.split(" ")[1], secretKey, (err, decode) => {
+        if(err){
+          return res.send({
+            code: 401,
+            msg: '登录已过期，请重新登录'
+          })
+        }
+        // 生成新token
+        const newToken = jwt.sign({ name: decode.name }, secretKey, { expiresIn: '5h' })
+        res.send({
+          code: 1,
+          msg: 'token刷新成功',
+          data: {
+            token: newToken
+          }
+        })
+      })
+    } else {
+      res.send({
+        code: 401,
+        msg: '未登录状态'
+      })
+    }
+  })
 }
