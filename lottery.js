@@ -5,7 +5,7 @@ const http = axios.create({
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
-        'Cookie': 'affCode=77741; ssid1=6d18a64c6b697fd3fe69e8120ce33435; random=4117; affid=seo7; _locale_=zh_CN; token=e7e85c2b415da5f9db96efe889fcbb5f09dd3b95; 438fda7746e4=e7e85c2b415da5f9db96efe889fcbb5f09dd3b95'
+        'Cookie': 'affCode=77741; _locale_=zh_CN; ssid1=7c4c9defcfbf330f2fe8069e007777de; random=391; token=718560d05bc14b3ebbf4397dc202922b7d5f6b18; 438fda7746e4=718560d05bc14b3ebbf4397dc202922b7d5f6b18'
     }
 });
 var initMoney=0;
@@ -57,21 +57,20 @@ const playLottery = async () => {
      
             "periodRequests": [
               {
-                "lottery": "PK10JSC"
+                "lottery": "XYFT"
               }
             ]
           
     });
     const { drawNumber, currentTime, drawTime } = res.data.result[0]
-    const res2 = await http.get('/web/rest/member/lastResult?lottery=PK10JSC');
+    const res2 = await http.get('/web/rest/member/lastResult?lottery=XYFT');
     const currentNum=Number(res2.data.result.result.split(',')[0]);
     const lastNum=Number(res2.data.result.result.split(',')[9]);
     const numArr = generateRandomNumbers([currentNum,8]).map((i)=>i.toString());
-    const res5 = await http.get(`/web/rest/member/resulthistory?lottery=PK10JSC`);
+    const res5 = await http.get(`/web/rest/member/resulthistory?lottery=XYFT`);
     let historyArr = res5.data.result.slice(0, 3).map(item => Number(item.result.split(',')[0]));
     // const numArr = getTopThreeFrequent(historyArr);
     let playCode='';
-    console.log(historyArr);
     if(historyArr.every(item=>item<6)&&historyArr.length>2){
         playCode='D';
         playMoney=playMoney*2;
@@ -90,7 +89,7 @@ const playLottery = async () => {
         "game": "DX1",
         "groupText": "两面",
         "ignore": "false",
-        "lottery": "PK10JSC",
+        "lottery": "XYFT",
         "odds": 1.999,
         "rowText": "冠军"
       }]
