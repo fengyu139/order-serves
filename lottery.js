@@ -49,7 +49,7 @@ async function getLottery(){
 
       // 计算大小比例结果
       const sizeRatio = calculateSizeRatio(openArr);
-      console.log('大小比例结果:', sizeRatio);
+    //   console.log('大小比例结果:', sizeRatio);
 
       let openCounts=countOccurrences(openArr.splice(1,openArr.length-1))
     //   console.log(openCounts);
@@ -89,13 +89,14 @@ function countOccurrences(arr) {
 
 async function playLottery(){
     const {result,balance}=await getBalance()
-    console.log(parseInt(balance-gBalance));
+    // console.log(parseInt(balance-gBalance));
     if(parseInt(balance-gBalance)<-348&&balance>1){
         console.log('止损线了，停止投注');
         return
     }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
+    console.log(drawNumber);
     if(drawNumber.slice(-3)==='070'){
         playMoney=15
         console.log('今天结束了');
@@ -161,7 +162,9 @@ function schedulePlayLotteryAt8AM() {
     init()
     playLottery();
     // 设置下一天的8点定时器
+   setTimeout(()=>{
     schedulePlayLotteryAt8AM();
+   },3000)
   }, timeUntil8AM);
 }
 
@@ -172,3 +175,7 @@ playLottery();
 setInterval(async()=>{
     await getBalance()
 },120000)
+setInterval(async()=>{
+   let res=await getBalance()
+   console.log(res.balance); 
+},10800000)
