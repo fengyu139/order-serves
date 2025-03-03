@@ -3,12 +3,12 @@ const http=axios.create({
     baseURL:'https://dsn3377.com/web/rest',
     headers:{
         'Content-Type':'application/json',
-        'Cookie':'ssid1=688e90d57ea0a146e22c73cb767871c8; random=422; _locale_=zh_CN; token=4a790c911e682bb7587b8be078c7d40e13864f67; 438fda7746e4=4a790c911e682bb7587b8be078c7d40e13864f67'
+        'Cookie':'affCode=77741; _locale_=zh_CN; ssid1=2b6550e4fe933c814d47737feb101f46; random=9140; token=0873c179687798fc2d2c7dbfee3658f18bf57f7a; 438fda7746e4=0873c179687798fc2d2c7dbfee3658f18bf57f7a'
     }
 })
 var gBalance=0
 var currentNum=0
-var playMoney=25
+var playMoney=15
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    return res.data.result
@@ -22,7 +22,7 @@ async function getLottery(){
         ]
       })
       let res2=await http.get('/member/resulthistory?lottery=SGFT')
-      let openArr=res2.data.result.slice(0,20).map(item=>item.result.split(',')[0])
+      let openArr=res2.data.result.slice(0,15).map(item=>item.result.split(',')[0])
 
       // 计算大小比例并返回结果
       function calculateSizeRatio(numbers) {
@@ -65,7 +65,7 @@ async function getLottery(){
     let res3=await http.get(`/member/lastResult?lottery=SGFT`)
     let lastNum=res3.data.result.result.split(',')[0]<6?'X':'D'
     if(sizeRatio==''){
-        playMoney=25
+        playMoney=15
     }
     return {...res.data.result[0],playNum:[sizeRatio],lastNum:lastNum}
 }
@@ -97,15 +97,16 @@ async function playLottery(){
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
     if(drawNumber.slice(-3)==='070'){
-        playMoney=25
+        playMoney=15
         console.log('今天结束了');
+        console.log(balance);
         return 
     }
     if(lastNum==currentNum){
-        playMoney=25    
+        playMoney=15    
     }
-    if(playMoney==200){
-        playMoney=25  
+    if(playMoney==120){
+        playMoney=15  
     }
     let bets=[]
     playMoney=playMoney*2
@@ -167,7 +168,7 @@ function schedulePlayLotteryAt8AM() {
 init()
 // 替换原来的直接调用playLottery的代码
 schedulePlayLotteryAt8AM();
-
+playLottery();
 setInterval(async()=>{
     await getBalance()
 },120000)
