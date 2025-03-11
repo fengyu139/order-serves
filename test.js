@@ -1,106 +1,83 @@
-function guessBigSmall() {
-    return Math.random() < 0.5 ? "Big" : "Small"; // 50% 概率返回 "Big" 或 "Small"
-}
-
-// 计算凯利公式下注比例（修正计算逻辑）
-function kellyCriterion(winRate, odds) {
-    let kellyFraction = (winRate * (odds + 1) - 1) / odds;
-    return Math.max(0.01, kellyFraction); // 防止出现负数下注，至少下注 1% 余额
-}
-
-function advancedStrategy({
-    initialBet = 5, // 初始下注额
-    maxRounds = 1000, // 每天最多下注轮数
-    maxLossStreak = 5, // 最高连输次数
-    stopLoss = 200, // 低于 200 停止
-    stopWin = 2000, // 达到 2000 停止
-    odds = 1, // 赔率 (1:1)
-}) {
-    let balance = 1000; // 初始资金
-    let bet = initialBet;
-    let lossStreak = 0;
-    let history = []; // 记录开奖历史
-    let lastResult = null;
-    let consecutiveCount = 0;
-
-    for (let round = 1; round <= maxRounds; round++) {
-        let result = guessBigSmall();
-        history.push(result);
-
-        // 计算是否存在连开
-        if (result === lastResult) {
-            consecutiveCount++;
-        } else {
-            consecutiveCount = 1;
-        }
-        lastResult = result;
-
-        // **趋势 & 反趋势分析**
-        let guess;
-        if (consecutiveCount >= 6) {
-            guess = result === "Big" ? "Small" : "Big"; // 反向下注
-        } else {
-            guess = guessBigSmall(); // 随机下注
-        }
-
-        // **动态下注策略**
-        let winRate = 0.5; // 默认 50% 预测胜率
-        let kellyBetFraction = kellyCriterion(winRate, odds); // 计算凯利下注比例
-        let dynamicBet = Math.max(bet, balance * kellyBetFraction); // **确保下注值不为 0**
-
-        // 防止下注金额超过当前余额
-        dynamicBet = Math.min(dynamicBet, balance);
-
-        console.log(
-            `Round ${round}: Guess ${guess}, Result ${result}, Bet ${dynamicBet.toFixed(2)}, Balance ${balance}`
-        );
-
-        if (guess === result) {
-            balance += dynamicBet;
-            bet = initialBet; // 重新回到初始下注
-            lossStreak = 0;
-        } else {
-            balance -= dynamicBet;
-            lossStreak++;
-
-            // **止损逻辑**：如果资金低于 stopLoss，停止下注
-            if (balance <= stopLoss) {
-                console.log("🚨 止损触发，停止下注！");
-                break;
+const axios = require('axios');
+const http=axios.create({
+    baseURL:'https://dsn3377.com/web/rest',
+    headers:{
+        'Content-Type':'application/json',
+        'Cookie':'affCode=77741; ssid1=996024165c1c379e9542453387f86a1f; random=6987; _locale_=zh_CN; affid=seo7; token=25ea60921fd8435fdf1848c4b9769c46a8eedbb9; 438fda7746e4=25ea60921fd8435fdf1848c4b9769c46a8eedbb9'
+    }
+})
+var money=1650
+var playNum=''
+var playMoney=50
+ // 计算大小比例并返回结果
+ function calculateSizeRatio(numbers) {
+    let smallCount = 0; // 小于6的数量
+    let largeCount = 0; // 大于5的数量
+    
+    numbers.forEach(num => {
+      const numValue = parseInt(num);
+      if (numValue <= 5) {
+        smallCount++;
+      } else if (numValue >= 6) {
+        largeCount++;
+      }
+    });
+    
+    if (smallCount > largeCount) {
+      return 'X'; // 小的多
+    } else if (largeCount > smallCount) {
+      return 'D'; // 大的多
+    } else {
+      return ''; // 大小相等
+    }
+  }
+async function getHistory(){
+    let res=await http.get('/member/resulthistory?lottery=SGFT&date=2025-03-11')
+    // console.log(res.data.result)
+    let openArr=res.data.result.map(item=>item.result.split(',')[0]).reverse()
+    // console.log(openArr.slice(17-16,17-1));
+    for(let i=0;i<openArr.length;i++){
+        // let sizeRatio=calculateSizeRatio(openArr.slice(i,i+15))
+        // console.log(sizeRatio);
+        if(i>15){
+           let currentNum=openArr[i]>5?'D':'X'
+           console.log(`当前结果${currentNum}:${openArr[i]}`);
+           if(playMoney==800){
+            playMoney=25
+           }
+           if(playMoney>money){
+            console.log('没钱了');
+            console.log(playMoney);
+            console.log(money);
+            break
+           }
+           if(currentNum==playNum){
+            console.log('中奖了');
+            money+=parseInt(playMoney*1.999)
+            playMoney=50
+           }else if(playNum==''){
+            // console.log('未下单');
+            playMoney=50
+           }
+           else{
+            console.log('未中奖');
+            playMoney=playMoney*2
+            money-=playMoney
+           }    
+      
+           
+            let sizeRatio=calculateSizeRatio(openArr.slice(i-16,i-1))
+            console.log(`本期下注：${sizeRatio}`);
+             if(i===openArr.length-1){
+                console.log(openArr.slice(i-16,i-1));
             }
-
-            // **止盈逻辑**：如果资金高于 stopWin，停止下注
-            if (balance >= stopWin) {
-                console.log("💰 达到目标盈利，停止下注！");
-                break;
-            }
-
-            // **倍投策略**: 不采用无限倍投，而是根据凯利公式调整
-            if (lossStreak >= maxLossStreak) {
-                bet = initialBet;
-                lossStreak = 0;
-                console.log("⚠️ 超过最大倍投次数，回到初始投注！");
-            } else {
-                bet = Math.min(dynamicBet * 2, balance * 0.2); // 限制最大下注额（≤ 资金的 20%）
-            }
-        }
-
-        if (balance <= 0) {
-            console.log("❌ 破产了！");
-            break;
+            playNum=sizeRatio
+            // console.log(openArr.slice(i-16,i-1));
+                 console.log('--------------------------------');
+            
+            
         }
     }
-
-    console.log(`🔚 最终余额: ${balance}`);
-    console.log(`📜 开奖历史: ${history.join(", ")}`);
+    console.log(money);
 }
-
-// 运行优化策略
-advancedStrategy({
-    initialBet: 5, // 初始下注
-    maxRounds: 1000, // 最多下注 1000 局
-    maxLossStreak: 5, // 最高倍投 5 次
-    stopLoss: 200, // 低于 200 停止
-    stopWin: 2000, // 目标 2000 停止
-    odds: 1, // 赔率 1:1
-});
+getHistory()

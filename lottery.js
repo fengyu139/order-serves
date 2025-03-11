@@ -3,12 +3,12 @@ const http=axios.create({
     baseURL:'https://dsn3377.com/web/rest',
     headers:{
         'Content-Type':'application/json',
-        'Cookie':'affCode=77741; _locale_=zh_CN; ssid1=2b6550e4fe933c814d47737feb101f46; random=9140; token=0873c179687798fc2d2c7dbfee3658f18bf57f7a; 438fda7746e4=0873c179687798fc2d2c7dbfee3658f18bf57f7a'
+        'Cookie':'affCode=77741; ssid1=996024165c1c379e9542453387f86a1f; random=6987; _locale_=zh_CN; affid=seo7; token=25ea60921fd8435fdf1848c4b9769c46a8eedbb9; 438fda7746e4=25ea60921fd8435fdf1848c4b9769c46a8eedbb9'
     }
 })
 var gBalance=0
 var currentNum=0
-var playMoney=15
+var playMoney=25
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    return res.data.result
@@ -22,7 +22,7 @@ async function getLottery(){
         ]
       })
       let res2=await http.get('/member/resulthistory?lottery=SGFT')
-      let openArr=res2.data.result.slice(0,15).map(item=>item.result.split(',')[0])
+      let openArr=res2.data.result.slice(2,17).map(item=>item.result.split(',')[0])
 
       // 计算大小比例并返回结果
       function calculateSizeRatio(numbers) {
@@ -65,7 +65,7 @@ async function getLottery(){
     let res3=await http.get(`/member/lastResult?lottery=SGFT`)
     let lastNum=res3.data.result.result.split(',')[0]<6?'X':'D'
     if(sizeRatio==''){
-        playMoney=15
+        playMoney=25
     }
     return {...res.data.result[0],playNum:[sizeRatio],lastNum:lastNum}
 }
@@ -90,24 +90,29 @@ function countOccurrences(arr) {
 async function playLottery(){
     const {result,balance}=await getBalance()
     // console.log(parseInt(balance-gBalance));
-    if(parseInt(balance-gBalance)<-348&&balance>1){
+    if(parseInt(balance-gBalance)<-1620&&balance>1){
         console.log('止损线了，停止投注');
         return
     }
+    if(parseInt(balance-gBalance)>2399&&balance>1){
+      console.log('✅ 盈利线了，停止投注');
+      init()
+      return
+  }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
     console.log(drawNumber);
     if(drawNumber.slice(-3)==='070'){
-        playMoney=15
+        playMoney=25
         console.log('今天结束了');
         console.log(balance);
         return 
     }
     if(lastNum==currentNum){
-        playMoney=15    
+        playMoney=25    
     }
-    if(playMoney==120){
-        playMoney=15  
+    if(playMoney==800){
+        playMoney=25  
     }
     let bets=[]
     playMoney=playMoney*2
@@ -145,10 +150,10 @@ function schedulePlayLotteryAt8AM() {
     now.getFullYear(),
     now.getMonth(),
     now.getDate(),
-    8, 0, 0, 0 // 设置为早上8:00:00
+    8, 21, 0, 0 // 设置为早上8:21:00
   );
   
-  // 如果当前时间已经过了今天的8点，就设置为明天的8点
+  // 如果当前时间已经过了今天的8点20，就设置为明天的8点20
   if (now > scheduledTime) {
     scheduledTime.setDate(scheduledTime.getDate() + 1);
   }
@@ -158,7 +163,7 @@ function schedulePlayLotteryAt8AM() {
   
   // 设置定时器在8点启动playLottery
   setTimeout(() => {
-    console.log('现在是早上8点，开始投注');
+    console.log('现在是早上8点21分，开始投注');
     init()
     playLottery();
     // 设置下一天的8点定时器
@@ -171,7 +176,9 @@ function schedulePlayLotteryAt8AM() {
 init()
 // 替换原来的直接调用playLottery的代码
 schedulePlayLotteryAt8AM();
-playLottery();
+setTimeout(()=>{
+  playLottery();
+},4000)
 setInterval(async()=>{
     await getBalance()
 },120000)
