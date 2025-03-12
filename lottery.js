@@ -93,14 +93,20 @@ function countOccurrences(arr) {
 async function playLottery(){
     const {result,balance}=await getBalance()
     // console.log(parseInt(balance-gBalance));
-    if(parseInt(balance-gBalance)<-1620&&balance>1){
-        console.log('止损线了，停止投注');
-        return
-    }
-    if(parseInt(balance-gBalance)>2399&&balance>1){
-      console.log('✅ 盈利线了，停止投注');
-      init()
-      return
+    // if(parseInt(balance-gBalance)<-1620&&balance>1){
+    //     console.log('止损线了，停止投注');
+    //     return
+    // }
+  //   if(parseInt(balance-gBalance)>2399&&balance>1){
+  //     console.log('✅ 盈利线了，停止投注');
+  //     init()
+  //     return
+  // }
+  if(parseInt(balance-gBalance)>1300&&balance>1){
+    playFlag=false
+    playCount=0
+    gBalance=balance
+    console.log('✅ 盈利线了，停止一会儿，等下次的时机');
   }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
