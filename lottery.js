@@ -8,7 +8,7 @@ const http=axios.create({
 })
 var gBalance=0
 var currentNum=0
-var playMoney=25
+var playMoney=50
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    return res.data.result
@@ -65,7 +65,7 @@ async function getLottery(){
     let res3=await http.get(`/member/lastResult?lottery=SGFT`)
     let lastNum=res3.data.result.result.split(',')[0]<6?'X':'D'
     if(sizeRatio==''){
-        playMoney=25
+        playMoney=50
     }
     return {...res.data.result[0],playNum:[sizeRatio],lastNum:lastNum}
 }
@@ -103,16 +103,16 @@ async function playLottery(){
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
     console.log(drawNumber);
     if(drawNumber.slice(-3)==='070'){
-        playMoney=25
+        playMoney=50
         console.log('今天结束了');
         console.log(balance);
         return 
     }
     if(lastNum==currentNum){
-        playMoney=25    
+        playMoney=50    
     }
-    if(playMoney==800){
-        playMoney=25  
+    if(playMoney==400){
+        playMoney=50  
     }
     let bets=[]
     playMoney=playMoney*2
