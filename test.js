@@ -20,7 +20,7 @@ const http = axios.create({
   }
 });
 
-var money = 1050;
+var money = 2050;
 var playNum = '';
 var playMoney = 50;
 

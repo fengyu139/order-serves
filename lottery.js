@@ -3,9 +3,12 @@ const http=axios.create({
     baseURL:'https://dsn3377.com/web/rest',
     headers:{
         'Content-Type':'application/json',
-        'Cookie':'affCode=77741; ssid1=996024165c1c379e9542453387f86a1f; random=6987; _locale_=zh_CN; affid=seo7; token=25ea60921fd8435fdf1848c4b9769c46a8eedbb9; 438fda7746e4=25ea60921fd8435fdf1848c4b9769c46a8eedbb9'
+        'Cookie':'application/json',
+        'Cookie':'affCode=77741; ssid1=84b4260e9b6f2c951923e19810fd2cfd; random=4975; affid=seo7; _locale_=zh_CN; token=0da7af41bc37365469bdcc3850ad2f379ee60b91; 438fda7746e4=0da7af41bc37365469bdcc3850ad2f379ee60b91'
     }
 })
+var playFlag=false
+var playCount=0
 var gBalance=0
 var currentNum=0
 var playMoney=50
@@ -110,12 +113,17 @@ async function playLottery(){
     }
     if(lastNum==currentNum){
         playMoney=50    
+        playCount=0
     }
     if(playMoney==400){
         playMoney=50  
     }
     let bets=[]
     playMoney=playMoney*2
+    playCount++
+    if(playCount>5){
+        playFlag=true
+    }
     playNum.forEach(item=>{
         bets.push({
             "amount": playMoney,
@@ -131,7 +139,7 @@ async function playLottery(){
           })
     })
     currentNum=playNum[0]
-    if(playNum[0]){
+    if(playNum[0]&&playFlag){
         let res=await http.post('/member/dragon/bet',{bets})
     }
     setTimeout(()=>{
