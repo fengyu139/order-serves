@@ -22,7 +22,7 @@ const http = axios.create({
 
 var money = 2050;
 var playNum = '';
-var playMoney = 50;
+var playMoney = 25;
 
 // 计算大小比例并返回结果
 function calculateSizeRatio(numbers) {
@@ -56,7 +56,7 @@ async function getHistory() {
       let currentNum = openArr[i] > 5 ? 'D' : 'X';
       logMessage(`当前结果${currentNum}:${openArr[i]}`);
       if (playMoney == 800) {
-        playMoney = 25;
+        playMoney = 12.5;
       }
       if (playMoney > money) {
         logMessage('没钱了');
@@ -68,9 +68,9 @@ async function getHistory() {
         logMessage('上期结果:中奖了');
         zjCount++;
         money += parseInt(playMoney * 1.999);
-        playMoney = 50;
+        playMoney = 25;
       } else if (playNum == '') {
-        playMoney = 50;
+        playMoney = 25;
       } else {
         logMessage('上期结果:未中奖');
         zjCount = 0;

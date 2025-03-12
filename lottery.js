@@ -172,6 +172,7 @@ function schedulePlayLotteryAt8AM() {
   // 设置定时器在8点启动playLottery
   setTimeout(() => {
     console.log('现在是早上8点21分，开始投注');
+    playFlag=false
     init()
     playLottery();
     // 设置下一天的8点定时器
