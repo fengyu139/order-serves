@@ -7,6 +7,16 @@ const http=axios.create({
         'Cookie':'affCode=77741; ssid1=84b4260e9b6f2c951923e19810fd2cfd; random=4975; affid=seo7; _locale_=zh_CN; token=0da7af41bc37365469bdcc3850ad2f379ee60b91; 438fda7746e4=0da7af41bc37365469bdcc3850ad2f379ee60b91'
     }
 })
+// 提款接口 https://dsn3377.com/web/rest/member/withdrawl
+// 参数
+// {
+//   "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
+//   "drawCode": "309709",
+//   "drawamount": "1800",
+//   "currency": "USDT",
+//   "currencyRate": 7.43,
+//   "transChannel": 0
+// }
 var playFlag=false
 var playCount=0
 var gBalance=0
@@ -102,11 +112,21 @@ async function playLottery(){
   //     init()
   //     return
   // }
-  if(parseInt(balance-gBalance)>1300&&balance>1){
+  if(parseInt(balance-gBalance)>910&&balance>1){
     playFlag=false
     playCount=0
-    gBalance=balance
+    // gBalance=balance
     console.log('✅ 盈利线了，停止一会儿，等下次的时机');
+    let res=await http.post('/member/withdrawl',{
+        "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
+        "drawCode": "309709",
+        "drawamount": "1000",
+        "currency": "USDT",
+        "currencyRate": 7.43,
+        "transChannel": 0
+    })
+    console.log(res.data);
+    gBalance=balance-1000
   }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
@@ -127,7 +147,7 @@ async function playLottery(){
     let bets=[]
     playMoney=playMoney*2
     playCount++
-    if(playCount>5){
+    if(playCount>4){
         playFlag=true
     }
     playNum.forEach(item=>{
