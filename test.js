@@ -16,13 +16,13 @@ const http = axios.create({
   baseURL: 'https://dsn3377.com/web/rest',
   headers: {
     'Content-Type': 'application/json',
-    'Cookie': 'affCode=77741; ssid1=e15dfe6b0a6def73b06e7cda8763c645; random=7957; _locale_=zh_CN; affid=seo7; token=ab1f34d988c57cd9b5733a8ca6e958865072ec79; 438fda7746e4=ab1f34d988c57cd9b5733a8ca6e958865072ec79'
+    'Cookie': '_locale_=zh_CN; affCode=77741; ssid1=63da6085243a6634c3d67e63dc178ab5; random=4992; affid=seo7; token=e1fa3332567380fb027650600d6ad254c4f9ce25; 438fda7746e4=e1fa3332567380fb027650600d6ad254c4f9ce25'
   }
 });
 
-var money = 10050;
+var money = 2000;
 var playNum = '';
-var  playMoney = 50;
+var  playMoney = 10;
 
 // 计算大小比例并返回结果
 function calculateSizeRatio(numbers) {
@@ -48,15 +48,25 @@ function calculateSizeRatio(numbers) {
 }
 
 async function getHistory() {
-  let res = await http.get('/member/resulthistory?lottery=SGFT&date=2025-03-13');
+  let res = await http.get('/member/resulthistory?lottery=SGFT&date=2025-03-31');
   let openArr = res.data.result.map(item => item.result.split(',')[0]).reverse();
 
   for (let i = 0; i < openArr.length; i++) {
-    if (i > 60) {
+    if (i > 17) {
       let currentNum = openArr[i] > 5 ? 'D' : 'X';
       logMessage(`当前结果${currentNum}:${openArr[i]}`);
-      if (playMoney == 800) {
-         playMoney = 50;
+      
+      if (currentNum == playNum) {
+        logMessage('上期结果:中奖了');
+        zjCount++;
+        money += parseFloat(playMoney * 1.999);
+         playMoney = 10;
+      } else if (playNum == '') {
+         playMoney = 10;
+      } else {
+        logMessage('上期结果:未中奖');
+        zjCount = 0;
+        playMoney = playMoney * 2;
       }
       if (playMoney > money) {
         logMessage('没钱了');
@@ -64,20 +74,8 @@ async function getHistory() {
         logMessage(money.toString());
         break;
       }
-      if (currentNum == playNum) {
-        logMessage('上期结果:中奖了');
-        zjCount++;
-        money += parseInt(playMoney * 1.999);
-         playMoney = 50;
-      } else if (playNum == '') {
-         playMoney = 50;
-      } else {
-        logMessage('上期结果:未中奖');
-        zjCount = 0;
-        playMoney = playMoney * 2;
-      }
       money -= playMoney;
-      let sizeRatio = calculateSizeRatio(openArr.slice(i - 16, i - 1));
+      let sizeRatio = Math.random() > 0.5 ? 'D' : 'X';
       if (zjCount > 5) {
         zjCount=0
       }
@@ -92,4 +90,10 @@ async function getHistory() {
   logMessage(money.toString());
 }
 
+async function getCcyData(){
+  let res=await http.get('/member/ccyWithdrawInfos')
+  console.log(res.data.result[0].exchangeRate);
+}
+
 getHistory();
+// getCcyData();

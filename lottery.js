@@ -4,7 +4,7 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'affCode=77741; ssid1=84b4260e9b6f2c951923e19810fd2cfd; random=4975; affid=seo7; _locale_=zh_CN; token=0da7af41bc37365469bdcc3850ad2f379ee60b91; 438fda7746e4=0da7af41bc37365469bdcc3850ad2f379ee60b91'
+        'Cookie':'_locale_=zh_CN; affCode=77741; ssid1=63da6085243a6634c3d67e63dc178ab5; random=4992; affid=seo7; token=e1fa3332567380fb027650600d6ad254c4f9ce25; 438fda7746e4=e1fa3332567380fb027650600d6ad254c4f9ce25'
     }
 })
 // 提款接口 https://dsn3377.com/web/rest/member/withdrawl
@@ -12,7 +12,7 @@ const http=axios.create({
 // {
 //   "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
 //   "drawCode": "309709",
-//   "drawamount": "1800",
+//   "drawamount": "1800",  
 //   "currency": "USDT",
 //   "currencyRate": 7.43,
 //   "transChannel": 0
@@ -21,7 +21,7 @@ var playFlag=false
 var playCount=0
 var gBalance=0
 var currentNum=0
-var playMoney=50
+var playMoney=5
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    return res.data.result
@@ -75,12 +75,9 @@ async function getLottery(){
       // 收集所有出现次数为最大和第二大的数字
       const maxNumbers = sortedCounts.filter(([, count]) => count === maxCount);
       const secondMaxNumbers = sortedCounts.filter(([, count]) => count === secondMax);
-    let res3=await http.get(`/member/lastResult?lottery=SGFT`)
-    let lastNum=res3.data.result.result.split(',')[0]<6?'X':'D'
-    if(sizeRatio==''){
-        playMoney=50
-    }
-    return {...res.data.result[0],playNum:[sizeRatio],lastNum:lastNum}
+      let res3=await http.get(`/member/lastResult?lottery=SGFT`)
+      let lastNum=res3.data.result.result.split(',')[0]<6?'X':'D'
+    return {...res.data.result[0],playNum:[Math.random() > 0.5 ? 'D' : 'X'],lastNum:lastNum}
 }
 var gNumArr=['1','2','3','4','5','6','7','8','9','10']
 function generateNumbers() {
@@ -112,17 +109,19 @@ async function playLottery(){
   //     init()
   //     return
   // }
-  if(parseInt(balance-gBalance)>910&&balance>1){
+  if(parseInt(balance-gBalance)>1000&&balance>1){
     playFlag=false
     playCount=0
     // gBalance=balance
     console.log('✅ 盈利线了，停止一会儿，等下次的时机');
+    let resWithdraw=await http.get('/member/ccyWithdrawInfos')
+    let currencyRate= resWithdraw.data.result[0].exchangeRate;
     let res=await http.post('/member/withdrawl',{
         "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
         "drawCode": "309709",
         "drawamount": "1000",
         "currency": "USDT",
-        "currencyRate": 7.43,
+        "currencyRate": currencyRate,
         "transChannel": 0
     })
     console.log(res.data);
@@ -131,25 +130,20 @@ async function playLottery(){
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
     console.log(drawNumber);
-    if(drawNumber.slice(-3)==='070'){
-        playMoney=50
-        console.log('今天结束了');
-        console.log(balance);
-        return 
-    }
     if(lastNum==currentNum){
-        playMoney=50    
+        playMoney=5    
         playCount=0
     }
-    if(playMoney==400){
-        playMoney=50  
+    if(Number(drawNumber.slice(-3))>65&&Number(drawNumber.slice(-3))<73&&playMoney==5){
+      playMoney=5
+      console.log('今天结束了');
+      return 
+  }
+    if(playMoney==640){
+        playMoney=5  
     }
     let bets=[]
     playMoney=playMoney*2
-    playCount++
-    if(playCount>4){
-        playFlag=true
-    }
     playNum.forEach(item=>{
         bets.push({
             "amount": playMoney,
@@ -165,8 +159,20 @@ async function playLottery(){
           })
     })
     currentNum=playNum[0]
-    if(playNum[0]&&playFlag){
+    if(playNum[0]){
+       try{
         let res=await http.post('/member/dragon/bet',{bets})
+       }catch(err){
+        console.log(err);
+        axios.post('http://154.92.15.136:8000/api/addOrder',{
+          "orderName": "爆仓了-请尽快处理",
+          "isPack": false,
+          "taste": 1,
+          "isFinish": false,
+          "totalMoney": 0,
+          "actualMoney": 0
+        })
+       }
     }
     setTimeout(()=>{
         playLottery()
@@ -217,7 +223,7 @@ setTimeout(()=>{
 setInterval(async()=>{
     await getBalance()
 },120000)
-setInterval(async()=>{
-   let res=await getBalance()
-   console.log(res.balance); 
-},10800000)
+// setInterval(async()=>{
+//    let res=await getBalance()
+//    console.log(res.balance); 
+// },10800000)
