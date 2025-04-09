@@ -16,13 +16,13 @@ const http = axios.create({
   baseURL: 'https://dsn3377.com/web/rest',
   headers: {
     'Content-Type': 'application/json',
-    'Cookie': '_locale_=zh_CN; affCode=77741; ssid1=63da6085243a6634c3d67e63dc178ab5; random=4992; affid=seo7; token=e1fa3332567380fb027650600d6ad254c4f9ce25; 438fda7746e4=e1fa3332567380fb027650600d6ad254c4f9ce25'
+    'Cookie': 'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=85b381a69062250cb329e0634931754d; random=7515; token=b93bfb6c605a9dade374bcb4c5be030a8e2d9a0f; 438fda7746e4=b93bfb6c605a9dade374bcb4c5be030a8e2d9a0f'
   }
 });
 
-var money = 2000;
+var money = 3000;
 var playNum = '';
-var  playMoney = 10;
+var  playMoney = 50;
 
 // 计算大小比例并返回结果
 function calculateSizeRatio(numbers) {
@@ -48,7 +48,7 @@ function calculateSizeRatio(numbers) {
 }
 
 async function getHistory() {
-  let res = await http.get('/member/resulthistory?lottery=SGFT&date=2025-03-31');
+  let res = await http.get('/member/resulthistory?lottery=SGFT&date=2025-04-06');
   let openArr = res.data.result.map(item => item.result.split(',')[0]).reverse();
 
   for (let i = 0; i < openArr.length; i++) {
@@ -60,9 +60,9 @@ async function getHistory() {
         logMessage('上期结果:中奖了');
         zjCount++;
         money += parseFloat(playMoney * 1.999);
-         playMoney = 10;
+         playMoney = 50;
       } else if (playNum == '') {
-         playMoney = 10;
+         playMoney = 50;
       } else {
         logMessage('上期结果:未中奖');
         zjCount = 0;

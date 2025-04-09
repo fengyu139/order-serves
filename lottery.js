@@ -4,7 +4,7 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'_locale_=zh_CN; affCode=77741; ssid1=63da6085243a6634c3d67e63dc178ab5; random=4992; affid=seo7; token=e1fa3332567380fb027650600d6ad254c4f9ce25; 438fda7746e4=e1fa3332567380fb027650600d6ad254c4f9ce25'
+        'Cookie':'_locale_=zh_CN; affCode=77741; affid=seo7; ssid1=075a60d4ae534f90d74d645e4f8b78d8; random=9391; token=8e5460fbb2f3aeaf62c35db0e2ad7e6b780552ea; 438fda7746e4=8e5460fbb2f3aeaf62c35db0e2ad7e6b780552ea'
     }
 })
 // 提款接口 https://dsn3377.com/web/rest/member/withdrawl
@@ -21,7 +21,7 @@ var playFlag=false
 var playCount=0
 var gBalance=0
 var currentNum=0
-var playMoney=5
+var playMoney=25
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    return res.data.result
@@ -109,7 +109,7 @@ async function playLottery(){
   //     init()
   //     return
   // }
-  if(parseInt(balance-gBalance)>1000&&balance>1){
+  if(parseInt(balance-gBalance)>2000&&balance>1){
     playFlag=false
     playCount=0
     // gBalance=balance
@@ -119,28 +119,29 @@ async function playLottery(){
     let res=await http.post('/member/withdrawl',{
         "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
         "drawCode": "309709",
-        "drawamount": "1000",
+        "drawamount": "1500",
         "currency": "USDT",
         "currencyRate": currencyRate,
         "transChannel": 0
     })
     console.log(res.data);
-    gBalance=balance-1000
+    gBalance=balance-1500
+    return
   }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
     console.log(drawNumber);
     if(lastNum==currentNum){
-        playMoney=5    
+        playMoney=25    
         playCount=0
     }
-    if(Number(drawNumber.slice(-3))>65&&Number(drawNumber.slice(-3))<73&&playMoney==5){
-      playMoney=5
+    if(Number(drawNumber.slice(-3))>65&&Number(drawNumber.slice(-3))<73&&playMoney==25){
+      playMoney=25
       console.log('今天结束了');
       return 
   }
-    if(playMoney==640){
-        playMoney=5  
+    if(playMoney==800){
+        playMoney=25  
     }
     let bets=[]
     playMoney=playMoney*2
@@ -159,11 +160,11 @@ async function playLottery(){
           })
     })
     currentNum=playNum[0]
-    if(playNum[0]){
+    if(playNum[0]&&balance>40){
        try{
         let res=await http.post('/member/dragon/bet',{bets})
        }catch(err){
-        console.log(err);
+        console.log(bets);
         axios.post('http://154.92.15.136:8000/api/addOrder',{
           "orderName": "爆仓了-请尽快处理",
           "isPack": false,
