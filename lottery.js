@@ -4,7 +4,7 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'_locale_=zh_CN; affCode=77741; affid=seo7; ssid1=075a60d4ae534f90d74d645e4f8b78d8; random=9391; token=8e5460fbb2f3aeaf62c35db0e2ad7e6b780552ea; 438fda7746e4=8e5460fbb2f3aeaf62c35db0e2ad7e6b780552ea'
+        'Cookie':'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=85b381a69062250cb329e0634931754d; random=7515; token=fee33706fb4270a07f8379a8d6c6660635fe90da; 438fda7746e4=fee33706fb4270a07f8379a8d6c6660635fe90da'
     }
 })
 // 提款接口 https://dsn3377.com/web/rest/member/withdrawl
@@ -17,6 +17,7 @@ const http=axios.create({
 //   "currencyRate": 7.43,
 //   "transChannel": 0
 // }
+var winMoney=0
 var playFlag=false
 var playCount=0
 var gBalance=0
@@ -109,28 +110,33 @@ async function playLottery(){
   //     init()
   //     return
   // }
-  if(parseInt(balance-gBalance)>2000&&balance>1){
+  if(parseInt(balance-gBalance)<-1550){
+    console.log('❌ 亏损1550，停止一会儿');
+   return
+  }
+  if(parseInt(balance-gBalance)>winMoney&&balance>1){
     playFlag=false
     playCount=0
     // gBalance=balance
     console.log('✅ 盈利线了，停止一会儿，等下次的时机');
     let resWithdraw=await http.get('/member/ccyWithdrawInfos')
     let currencyRate= resWithdraw.data.result[0].exchangeRate;
-    let res=await http.post('/member/withdrawl',{
+    if(balance>3000){
+      let res=await http.post('/member/withdrawl',{
         "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
         "drawCode": "309709",
-        "drawamount": "1500",
+        "drawamount": "1000",
         "currency": "USDT",
         "currencyRate": currencyRate,
         "transChannel": 0
     })
     console.log(res.data);
-    gBalance=balance-1500
+    gBalance=balance-1000
+    }
     return
   }
     let numArr=generateNumbers()
     const {drawNumber,currentTime,drawTime,playNum,lastNum}=await getLottery()
-    console.log(drawNumber);
     if(lastNum==currentNum){
         playMoney=25    
         playCount=0
@@ -163,10 +169,11 @@ async function playLottery(){
     if(playNum[0]&&balance>40){
        try{
         let res=await http.post('/member/dragon/bet',{bets})
+        console.log(drawNumber);
        }catch(err){
-        console.log(bets);
+        console.log(balance);
         axios.post('http://154.92.15.136:8000/api/addOrder',{
-          "orderName": "爆仓了-请尽快处理",
+          "orderName": "爆仓了-请尽快处理-"+balance,
           "isPack": false,
           "taste": 1,
           "isFinish": false,
@@ -175,9 +182,21 @@ async function playLottery(){
         })
        }
     }
+    if(balance<50){
+      axios.post('http://154.92.15.136:8000/api/addOrder',{
+        "orderName": "余额不足50，停止投注-"+balance,
+        "isPack": false,
+        "taste": 1,
+        "isFinish": false,
+        "totalMoney": 0,
+        "actualMoney": 0
+      })
+      console.log('余额不足50，停止投注');
+      return
+    }
     setTimeout(()=>{
         playLottery()
-    },drawTime-currentTime+10000+Math.random()*20000)
+    },drawTime-currentTime+60000+Math.random()*20000)
 }
 async function init(){
    const{balance}=await getBalance()
@@ -186,6 +205,7 @@ async function init(){
 
 // 添加一个在每天早上8点启动playLottery的函数
 function schedulePlayLotteryAt8AM() {
+  winMoney=Math.floor(Math.random() * (1500 - 1000 + 1)) + 1000
   const now = new Date();
   let scheduledTime = new Date(
     now.getFullYear(),
@@ -199,9 +219,8 @@ function schedulePlayLotteryAt8AM() {
     scheduledTime.setDate(scheduledTime.getDate() + 1);
   }
   
-  const timeUntil8AM = scheduledTime.getTime() - now.getTime();
+  const timeUntil8AM = scheduledTime.getTime() - now.getTime()+Math.random()*1000*60*60;
   console.log(`将在${scheduledTime.toLocaleString()}启动投注（${Math.floor(timeUntil8AM/1000/60)}分钟后）`);
-  
   // 设置定时器在8点启动playLottery
   setTimeout(() => {
     console.log('现在是早上8点21分，开始投注');
@@ -223,7 +242,7 @@ setTimeout(()=>{
 },4000)
 setInterval(async()=>{
     await getBalance()
-},120000)
+},90000)
 // setInterval(async()=>{
 //    let res=await getBalance()
 //    console.log(res.balance); 
