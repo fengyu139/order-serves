@@ -72,9 +72,6 @@ async function getDragon(){
    }
    if(playFlag&&playArr.length>0){
     playGame(dragonArr[0])
-    if(playArr.length>0){
-        console.log(playArr);
-    }
    }
    if(playArr.length==0){
     setTimeout(()=>{
