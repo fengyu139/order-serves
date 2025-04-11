@@ -51,6 +51,7 @@ async function playGame(data){
         let res=await http.post('/member/dragon/bet',{bets})
         playItemObj[data.lottery]=bets[0]
         } catch (error) {
+            playItemObj={}
             console.log(error.config.data);
             console.log(error.response.data);
         }
