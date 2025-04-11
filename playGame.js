@@ -5,7 +5,7 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=85b381a69062250cb329e0634931754d; random=7515; token=ed6b4faa8e6bee07691f01fd9c6073e317578230; 438fda7746e4=ed6b4faa8e6bee07691f01fd9c6073e317578230'
+        'Cookie':'affCode=77741; ssid1=8b9d2a5dcd4f8e77b36b0493ebbe91b2; random=5351; _locale_=zh_CN; token=9446a4b18d6191dac713b0bb6105b8bfbbe7be29; 438fda7746e4=9446a4b18d6191dac713b0bb6105b8bfbbe7be29'
     }
 })
 var timer=null
@@ -26,6 +26,12 @@ async function playGame(data){
         return
     }
     let playMoney=playItemObj[data.lottery]?.amount?playItemObj[data.lottery]?.amount*2:100
+    if(data.game!=playItemObj[data.lottery]?.game){
+        playMoney=100
+    }
+    if(playMoney==1600){
+        playMoney=100
+    }
     let bets=[]
          bets.push({
             "amount": playMoney,
@@ -37,6 +43,10 @@ async function playGame(data){
             "lottery": data.lottery,
             "odds": data.dragonGameOdds[`${aAndB}Odds`],
           })
+        const {drawTime,currentTime}=data.period
+        setTimeout(() => {
+            getDragon()
+        }, drawTime-currentTime+20000);
         try {
         let res=await http.post('/member/dragon/bet',{bets})
         playItemObj[data.lottery]=bets[0]
@@ -59,19 +69,22 @@ async function getDragon(){
     let curFlag=dragonArr.some(item=>item.rank>12)
     playFlag=curFlag
    }
-   if(playFlag){
-    dragonArr.forEach(item=>{
-        playGame(item)
-    })
+   if(playFlag&&playArr.length>0){
+    playGame(dragonArr[0])
     if(playArr.length>0){
         console.log(playArr);
     }
+   }
+   if(playArr.length==0){
+    setTimeout(()=>{
+        getDragon()
+    },90000)
    }
 }
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    let balance= res.data.result.balance
-   if(balance>6000){
+   if(balance>4000){
     console.log('✅ 盈利线了');
     playFlag=false
     let resWithdraw=await http.get('/member/ccyWithdrawInfos')
@@ -87,6 +100,14 @@ async function getBalance(){
     console.log(res.data);
    }
    if(balance<100&&res.data.result.betting<100){
+    axios.post('http://154.92.15.136:8000/api/addOrder',{
+        "orderName": "余额不足100，停止投注-"+balance,
+        "isPack": false,
+        "taste": 1,
+        "isFinish": false,
+        "totalMoney": 0,
+        "actualMoney": 0
+      })
     clearInterval(timer)
     console.log('❌ 余额不足100，停止投注');
    }
@@ -94,5 +115,4 @@ async function getBalance(){
 getDragon()
 timer=setInterval(()=>{
     getBalance()
-    getDragon()
 },85000)
