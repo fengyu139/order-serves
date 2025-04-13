@@ -5,7 +5,7 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'affCode=77741; ssid1=8b9d2a5dcd4f8e77b36b0493ebbe91b2; random=5351; _locale_=zh_CN; token=9446a4b18d6191dac713b0bb6105b8bfbbe7be29; 438fda7746e4=9446a4b18d6191dac713b0bb6105b8bfbbe7be29'
+        'Cookie':'affCode=77741; ssid1=8b9d2a5dcd4f8e77b36b0493ebbe91b2; random=5351; _locale_=zh_CN; affid=seo7; token=172f7757af99cde07ed7332ed5ae84f3473bcc6c; 438fda7746e4=172f7757af99cde07ed7332ed5ae84f3473bcc6c'
     }
 })
 var timer=null
@@ -13,8 +13,9 @@ var excludeArr=['F3D','HK6','FKL8','PL3','PL5','HK6JSC','KLSFJSC']
 var playFlag=true
 var playArr=[]
 var playItemObj={}
+var playMoney=50
 async function playGame(data){
-    let playKey=data.dragonGameBetCount.find(item=>item.key.split('_')[1]!=data.contents)?.key
+    let playKey=data.dragonGameBetCount.find(item=>item.key.split('_')[1]==data.contents)?.key
     let aAndB=''
     for (const key in data.dragonGameOdds) {
        if(data.dragonGameOdds[key]==playKey){
@@ -25,12 +26,17 @@ async function playGame(data){
     if(data.drawNumber==playItemObj[data.lottery]?.drawNumber){
         return
     }
-    let playMoney=playItemObj[data.lottery]?.amount?playItemObj[data.lottery]?.amount*2:100
-    if(data.game!=playItemObj[data.lottery]?.game){
-        playMoney=100
+    for (const key in playItemObj) {
+        if(key==data.lottery){
+            playMoney=25
+        }
     }
-    if(playMoney==1600){
-        playMoney=100
+    playMoney=playMoney*2
+    if(data.game==playItemObj[data.lottery]?.game){
+        playMoney=50
+    }
+    if(playMoney==800){
+        playMoney=50
     }
     let bets=[]
          bets.push({
@@ -82,7 +88,7 @@ async function getDragon(){
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    let balance= res.data.result.balance
-   if(balance>4000){
+   if(balance>2500){
     console.log('✅ 盈利线了');
     playFlag=false
     let resWithdraw=await http.get('/member/ccyWithdrawInfos')
@@ -95,11 +101,16 @@ async function getBalance(){
         "currencyRate": currencyRate,
         "transChannel": 0
     })
+    const randomHours = Math.floor(Math.random() * (6 - 3 + 1)) + 3; // 生成3到6之间的随机整数
+    const randomMilliseconds = randomHours * 60 * 60 * 1000; // 转换为毫秒
+    setTimeout(() => {
+        playFlag=true
+    }, randomMilliseconds)
     console.log(res.data);
    }
    if(balance<100&&res.data.result.betting<100){
     axios.post('http://154.92.15.136:8000/api/addOrder',{
-        "orderName": "余额不足100，停止投注-"+balance,
+        "orderName": "余额不足50，停止投注-"+balance,
         "isPack": false,
         "taste": 1,
         "isFinish": false,
@@ -107,7 +118,7 @@ async function getBalance(){
         "actualMoney": 0
       })
     clearInterval(timer)
-    console.log('❌ 余额不足100，停止投注');
+    console.log('❌ 余额不足50，停止投注');
    }
 }
 getDragon()
