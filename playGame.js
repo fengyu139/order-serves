@@ -108,7 +108,7 @@ async function getBalance(){
     }, randomMilliseconds)
     console.log(res.data);
    }
-   if(balance<100&&res.data.result.betting<100){
+   if(balance<50&&res.data.result.betting<50){
     axios.post('http://154.92.15.136:8000/api/addOrder',{
         "orderName": "余额不足50，停止投注-"+balance,
         "isPack": false,
