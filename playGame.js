@@ -13,7 +13,7 @@ var excludeArr=['F3D','HK6','FKL8','PL3','PL5','HK6JSC','KLSFJSC']
 var playFlag=true
 var playArr=[]
 var playItemObj={}
-var playMoney=50
+var playMoney=25
 async function playGame(data){
     let playKey=data.dragonGameBetCount.find(item=>item.key.split('_')[1]==data.contents)?.key
     let aAndB=''
@@ -28,15 +28,15 @@ async function playGame(data){
     }
     for (const key in playItemObj) {
         if(key==data.lottery){
-            playMoney=25
+            playMoney=12.5
         }
     }
     playMoney=playMoney*2
     if(data.game==playItemObj[data.lottery]?.game){
-        playMoney=50
+        playMoney=25
     }
     if(playMoney==800){
-        playMoney=50
+        playMoney=25
     }
     let bets=[]
          bets.push({
@@ -72,10 +72,10 @@ async function getDragon(){
         delete playItemObj[key]
     }
    }
-   if(!playFlag){
-    let curFlag=dragonArr.some(item=>item.rank>12)
-    playFlag=curFlag
-   }
+//    if(!playFlag){
+//     let curFlag=dragonArr.some(item=>item.rank>12)
+//     playFlag=curFlag
+//    }
    if(playFlag&&playArr.length>0){
     playGame(dragonArr[0])
    }
@@ -88,7 +88,7 @@ async function getDragon(){
 async function getBalance(){
     let res=await http.get('/member/accountbalance')
    let balance= res.data.result.balance
-   if(balance>2500){
+   if(balance>2800){
     console.log('✅ 盈利线了');
     playFlag=false
     let resWithdraw=await http.get('/member/ccyWithdrawInfos')
@@ -96,7 +96,7 @@ async function getBalance(){
     let res=await http.post('/member/withdrawl',{
         "cardid": "TSCkYFxFmpzTfKjGqZboGmSw2eXaAf2oEB",
         "drawCode": "309709",
-        "drawamount": "1000",
+        "drawamount": "800",
         "currency": "USDT",
         "currencyRate": currencyRate,
         "transChannel": 0
@@ -105,6 +105,7 @@ async function getBalance(){
     const randomMilliseconds = randomHours * 60 * 60 * 1000; // 转换为毫秒
     setTimeout(() => {
         playFlag=true
+        getDragon()
     }, randomMilliseconds)
     console.log(res.data);
    }

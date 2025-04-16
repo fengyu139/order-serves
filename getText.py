@@ -12,6 +12,6 @@ def extract_epub_text(epub_path):
     return text
 
 # 示例用法
-text = extract_epub_text('/Users/test/Downloads/长夜难明-长夜难明.epub')
+text = extract_epub_text('/Users/test/Downloads/zjc.epub')
 with open('myBook.txt', 'w', encoding='utf-8') as f:
     f.write(text)
