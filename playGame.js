@@ -5,15 +5,17 @@ const http=axios.create({
     headers:{
         'Content-Type':'application/json',
         'Cookie':'application/json',
-        'Cookie':'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=a844930e80f6018059d276c0d027d65c; random=5920; token=ce3e8202ddf231e02f453219ab4a2c1bffb55879; 438fda7746e4=ce3e8202ddf231e02f453219ab4a2c1bffb55879'
+        'Cookie':'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=4342a99ef6654e4f1b4b751d67ce2054; random=4044; token=f14ecb26ed2efb4a1b40f2003472f3e259b5d3fc; 438fda7746e4=f14ecb26ed2efb4a1b40f2003472f3e259b5d3fc'
     }
 })
 var timer=null
+var dragonTimer=null  // 添加新的定时器变量
 var excludeArr=['F3D','HK6','FKL8','PL3','PL5','HK6JSC','KLSFJSC']
 var playFlag=true
 var playArr=[]
 var curMoney=0
 var playItemObj={}
+var isRunning = true  // 添加运行状态控制
 async function playGame(data){
     let playKey=data.dragonGameBetCount.find(item=>item.key.split('_')[1]!=data.contents)?.key
     let aAndB=''
@@ -59,31 +61,53 @@ async function playGame(data){
 }
 //获取长龙数据
 async function getDragon(){
-    let res=await http.get('/member/dragon/games?count=13')
-    let dragonArr=res.data.result.filter(item=>!excludeArr.includes(item.lottery))
-    playArr=dragonArr.map(item=>item.lottery)
-   for (const key in playItemObj) {
-    if(!playArr.includes(key)){
-        delete playItemObj[key]
+    if (!isRunning) return;  // 检查运行状态
+    
+    try {
+        let res=await http.get('/member/dragon/games?count=13')
+        let dragonArr=res.data.result.filter(item=>!excludeArr.includes(item.lottery))
+        playArr=dragonArr.map(item=>item.lottery)
+        
+        // 清理不存在的彩票数据
+        for (const key in playItemObj) {
+            if(!playArr.includes(key)){
+                delete playItemObj[key]
+            }
+        }
+        
+        if(!playFlag){
+            let curFlag=dragonArr.some(item=>item.rank>12)
+            playFlag=curFlag
+        }
+        
+        if(playFlag&&playArr.length>0){
+            await playGame(dragonArr[0])
+        }
+        
+        if(playArr.length==0 && isRunning){
+            // 清除之前的定时器
+            if (dragonTimer) {
+                clearTimeout(dragonTimer)
+            }
+            dragonTimer = setTimeout(()=>{
+                getDragon()
+            },90000)
+        }
+    } catch (error) {
+        console.error('获取长龙数据出错：', error)
+        // 发生错误时也设置重试
+        if (isRunning) {
+            dragonTimer = setTimeout(()=>{
+                getDragon()
+            },90000)
+        }
     }
-   }
-   if(!playFlag){
-    let curFlag=dragonArr.some(item=>item.rank>12)
-    playFlag=curFlag
-   }
-   if(playFlag&&playArr.length>0){
-    playGame(dragonArr[0])
-   }
-   if(playArr.length==0){
-    setTimeout(()=>{
-        getDragon()
-    },90000)
-   }
 }
 async function getBalance(){
-    let res=await http.get('/member/accountbalance')
-   let balance= res.data.result.balance
-   if(curMoney==0){
+    try {
+        let res=await http.get('/member/accountbalance')
+        let balance= res.data.result.balance
+        if(curMoney==0){
     curMoney=balance
    }
    if(balance>6000){
@@ -113,10 +137,19 @@ async function getBalance(){
     clearInterval(timer)
     console.log('❌ 余额不足50，停止投注');
    }
+
+} catch (error) {
+    console.log(error?.config?.data);
+    console.log(error?.response?.data);
+}
 }
 getDragon()
-timer=setInterval(()=>{
-    getBalance()
+timer=setInterval(async ()=>{
+    try {   
+     await getBalance()
+    } catch (error) {
+    console.log(error);
+    }
 },85000)
 
 // 设置每天晚上12点执行的方法
@@ -146,6 +179,14 @@ async function midnightTask() {
         let balance= res.data.result.balance
         console.log('今日收益', balance-curMoney);
         curMoney=balance
+        
+        // 每天午夜清理一次数据
+        cleanup();
+        // 重置运行状态
+        isRunning = true;
+        // 重新启动主要任务
+        // getDragon();
+        
     } catch (error) {
         console.error('午夜任务执行出错：', error);
     }
@@ -153,3 +194,27 @@ async function midnightTask() {
 
 // 启动午夜任务调度
 scheduleMidnightTask();
+
+// 清理函数
+function cleanup() {
+    isRunning = false;
+    if (dragonTimer) {
+        clearTimeout(dragonTimer);
+        dragonTimer = null;
+    }
+    playItemObj = {};
+    playArr = [];
+}
+
+// 添加进程退出处理
+process.on('SIGINT', () => {
+    console.log('正在清理资源...');
+    cleanup();
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log('正在清理资源...');
+    cleanup();
+    process.exit(0);
+});
