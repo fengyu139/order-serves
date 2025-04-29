@@ -4,10 +4,10 @@ const http=axios.create({
     baseURL:'https://dsn3377.com/web/rest',
     headers:{
         'Content-Type':'application/json',
-        'Cookie':'application/json',
-        'Cookie':'affCode=77741; _locale_=zh_CN; affid=seo7; ssid1=4342a99ef6654e4f1b4b751d67ce2054; random=4044; token=f14ecb26ed2efb4a1b40f2003472f3e259b5d3fc; 438fda7746e4=f14ecb26ed2efb4a1b40f2003472f3e259b5d3fc'
+        'Cookie':''
     }
 })
+var ranksNum=11
 var timer=null
 var dragonTimer=null  // 添加新的定时器变量
 var excludeArr=['F3D','HK6','FKL8','PL3','PL5','HK6JSC','KLSFJSC']
@@ -32,7 +32,7 @@ async function playGame(data){
     if(data.game!=playItemObj[data.lottery]?.game){
         playMoney=50
     }
-    if(playMoney==400){
+    if(playMoney==800){
         playMoney=50
     }
     let bets=[]
@@ -61,10 +61,10 @@ async function playGame(data){
 }
 //获取长龙数据
 async function getDragon(){
-    if (!isRunning) return;  // 检查运行状态
+    // if (!isRunning) return;  // 检查运行状态
     
     try {
-        let res=await http.get('/member/dragon/games?count=13')
+        let res=await http.get(`/member/dragon/games?count=${ranksNum}`)
         let dragonArr=res.data.result.filter(item=>!excludeArr.includes(item.lottery))
         playArr=dragonArr.map(item=>item.lottery)
         
@@ -177,15 +177,16 @@ async function midnightTask() {
     try {
         let res=await http.get('/member/accountbalance')
         let balance= res.data.result.balance
-        console.log('今日收益', balance-curMoney);
+        console.log('今日收益:', balance-curMoney);
+        axios.post('http://154.92.15.136:8000/api/addOrder',{
+        "orderName": "今日收益:"+(balance-curMoney),
+        "isPack": false,
+        "taste": 1,
+        "isFinish": false,
+        "totalMoney": 0,
+        "actualMoney": 0
+      })
         curMoney=balance
-        
-        // 每天午夜清理一次数据
-        cleanup();
-        // 重置运行状态
-        isRunning = true;
-        // 重新启动主要任务
-        // getDragon();
         
     } catch (error) {
         console.error('午夜任务执行出错：', error);
@@ -205,7 +206,9 @@ function cleanup() {
     playItemObj = {};
     playArr = [];
 }
-
+setInterval(()=>{
+    ranksNum=Math.floor(Math.random()*(18-11+1))+11 // 生成8到15之间的随机数
+},1000*60*60*6)
 // 添加进程退出处理
 process.on('SIGINT', () => {
     console.log('正在清理资源...');
