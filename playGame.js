@@ -32,7 +32,7 @@ async function playGame(data){
     if(data.game!=playItemObj[data.lottery]?.game){
         playMoney=50
     }
-    if(playMoney==800){
+    if(playMoney==400){
         playMoney=50
     }
     let bets=[]
