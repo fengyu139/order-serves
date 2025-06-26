@@ -4,10 +4,10 @@ const http=axios.create({
     baseURL:'https://dsn3377.com/web/rest',
     headers:{
         'Content-Type':'application/json',
-        'Cookie':''
+        'Cookie':'ssid1=1a5c659f28559664b2f70d7b8a2595b7; random=4356; token=c017cc0a76ffbc849789fff34fc8e4fb54a7057e; 438fda7746e4=c017cc0a76ffbc849789fff34fc8e4fb54a7057e'
     }
 })
-var ranksNum=11
+var ranksNum=Math.floor(Math.random()*(17-10+1))+10
 var timer=null
 var dragonTimer=null  // 添加新的定时器变量
 var excludeArr=['F3D','HK6','FKL8','PL3','PL5','HK6JSC','KLSFJSC']
@@ -32,7 +32,7 @@ async function playGame(data){
     if(data.game!=playItemObj[data.lottery]?.game){
         playMoney=50
     }
-    if(playMoney==400){
+    if(playMoney==800){
         playMoney=50
     }
     let bets=[]
@@ -64,8 +64,8 @@ async function getDragon(){
     // if (!isRunning) return;  // 检查运行状态
     
     try {
-        let res=await http.get(`/member/dragon/games?count=${ranksNum}`)
-        let dragonArr=res.data.result.filter(item=>!excludeArr.includes(item.lottery))
+        let res=await http.get(`/member/dragon/games?count=10`)
+        let dragonArr=res.data.result.filter(item=>!excludeArr.includes(item.lottery)).filter(item=>item.rank<14)
         playArr=dragonArr.map(item=>item.lottery)
         
         // 清理不存在的彩票数据
@@ -179,7 +179,7 @@ async function midnightTask() {
         let balance= res.data.result.balance
         console.log('今日收益:', balance-curMoney);
         axios.post('http://154.92.15.136:8000/api/addOrder',{
-        "orderName": "今日收益:"+(balance-curMoney),
+        "orderName": `今日收益:${parseInt(balance-curMoney)},当前余额:${curMoney}`,
         "isPack": false,
         "taste": 1,
         "isFinish": false,
@@ -207,7 +207,7 @@ function cleanup() {
     playArr = [];
 }
 setInterval(()=>{
-    ranksNum=Math.floor(Math.random()*(18-11+1))+11 // 生成8到15之间的随机数
+    ranksNum=Math.floor(Math.random()*(17-10+1))+10 // 生成8到15之间的随机数
 },1000*60*60*6)
 // 添加进程退出处理
 process.on('SIGINT', () => {

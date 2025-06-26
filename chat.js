@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const ipAddress = require("./ipAddress");
 const axios = require("axios");
 const serverData=require('./serve.json')
+const {getToken}=require('./token')
 const Schema = mongoose.Schema;
 const Chat = new Schema({
     name: String,
@@ -106,6 +107,16 @@ module.exports =(io,app)=> {
               data:data.reverse(),
               msg: '获取成功'
           })
+      })
+      app.get('/api/cpToken',async (req, res) => {
+       const token=req.query.token
+       getToken(token)
+       console.log(token);
+       res.send({
+        code: 1,
+        data:[],
+        msg: '获取成功'
+    })
       })
       
 }
