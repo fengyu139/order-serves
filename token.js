@@ -10,6 +10,9 @@ function getToken(token){
         }
       };
       clearInterval(timer)
+      if(!token){
+        return
+      }
       timer=setInterval(()=>{
           axios.request(config)
       .then((response) => {
@@ -18,7 +21,7 @@ function getToken(token){
       .catch((error) => {
         console.log(error);
       });
-      },60000)
+      },120000)
 }
 module.exports={
     getToken
